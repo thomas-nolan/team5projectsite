@@ -1,5 +1,3 @@
-# Escape From Uni
-
 ![Game Screenshot](docs/Game-photo.pgn)
 
 Trapped in a university you are tasked to escape, but it's not that easy. With tricky traps and a monster dean gaurding the key card to escape its no easy task to Escape From Uni.
