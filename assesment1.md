@@ -1,4 +1,4 @@
-# Escape From Uni
+# Assesment 1
 
 Your campus breakout begins here. Play Escape From Uni.
 
