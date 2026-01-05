@@ -3,13 +3,7 @@
 Your campus breakout begins here. Play Escape From Uni.
 
 # Team Members
-- Ben Leaver
-- Ali Tekin
-- Chichun Park
-- Faras Hbal
-- Gergely Gal
-- Hux Stevenson
-- Utkarsh Singh
+- 
 
 ## Downloads
 
