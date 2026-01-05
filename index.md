@@ -3,7 +3,12 @@
 Your campus breakout begins here. Play Escape From Uni.
 
 # Team Members
-- 
+- Tom Nolan
+- Will Punt
+- Stan
+- Lottie
+- Mimi
+- Ruth
 
 ## Downloads
 
@@ -11,7 +16,7 @@ Your campus breakout begins here. Play Escape From Uni.
 
 > Tip: On some systems you may need to allow running unsigned apps. Run with: `java -jar Escape_From_Uni-1.0.0.jar`
 
-## Documentation (PDF)
+## Documentation for Assesment 1(PDF)
 
 - [Requirements (Req1.pdf)](docs/Req1.pdf)
 - [Planning (Plan1.pdf)](docs/Plan1.pdf)
