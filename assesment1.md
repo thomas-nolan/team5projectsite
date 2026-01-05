@@ -1,6 +1,8 @@
 ---
-title: Assesment 1
+title: Assessment 1
 ---
+
+# Escape From Uni - Assessment 1
 
 Your campus breakout begins here. Play Escape From Uni.
 
