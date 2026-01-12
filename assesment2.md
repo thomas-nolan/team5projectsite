@@ -11,6 +11,9 @@ title: Assessment 2
 - [Architecture 2 (Arch2.pdf)](docs/Arch2.pdf)
 - [Risk Management 2 (Risk2.pdf)](docs/Risk2.pdf)
 
+## GitHub Repository
+https://github.com/thomas-nolan/team5project
+
 ## Game Jar
 
 - [Play Game] (docs/Escape_From_Uni-2.0.0.jar)
