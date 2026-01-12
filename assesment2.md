@@ -23,6 +23,8 @@ title: Assessment 2
 [Manual testing material (Manual_testing_material.pdf)](docs/Manual.pdf)
 #### Automated Tests
 [index.html (index.html)](docs/tests/test/index.html)
+### Coverage Report
+[index.html (index.html)](docs/html/index.html)
 
 ## GitHub Repository
 https://github.com/thomas-nolan/team5project
