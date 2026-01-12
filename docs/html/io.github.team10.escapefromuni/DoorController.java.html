@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DoorController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.github.team10.escapefromuni</a> &gt; <span class="el_source">DoorController.java</span></div><h1>DoorController.java</h1><pre class="source lang-java linenums">package io.github.team10.escapefromuni;
+
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+
+/**
+ * NEW FOR ASSESSMENT 2.
+ * This class acts as a controller for the door class
+ * It breaks up the logic from the old god class
+ * Controls the doors within a room setting their directions as well as which room they lead to
+ */
+public class DoorController {
+
+  private final EscapeGame game;
+  private final PlayerController playerController;
+  private RoomFlowManager roomFlowManager;
+  private final EventSystem eventSystem;
+
+<span class="nc" id="L21">  private Door[] doors = new Door[4];</span>
+<span class="nc" id="L22">  private final Texture positiveIndicator = new Texture(&quot;PositiveIndicator.png&quot;);</span>
+<span class="nc" id="L23">  private final Texture negativeIndicator = new Texture(&quot;NegativeIndicator.png&quot;);</span>
+<span class="nc" id="L24">  private Texture[] indicatorTextures = new Texture[4];</span>
+<span class="nc" id="L25">  private BitmapFont font = new BitmapFont();</span>
+<span class="nc" id="L26">  private boolean isTouchingDoor = false;</span>
+<span class="nc" id="L27">  private boolean addedEvent = false;</span>
+
+  /**
+   * NEW FOR ASSESSMENT 2.
+   * This is a constructor which initialises the variables needed for the room controller
+   * It also sets the direction of the doors as well as the font colour for locked doors
+   *
+   * @param game the main LibGDX game instance
+   * @param playerController the controller used handling the player
+   * @param roomFlowManager  the manager for room transitions
+   * @param eventSystem the central events manager
+   */
+  public DoorController(EscapeGame game, PlayerController playerController,
+<span class="nc" id="L40">       RoomFlowManager roomFlowManager, EventSystem eventSystem) {</span>
+<span class="nc" id="L41">    this.game = game;</span>
+<span class="nc" id="L42">    this.playerController = playerController;</span>
+<span class="nc" id="L43">    this.roomFlowManager = roomFlowManager;</span>
+<span class="nc" id="L44">    this.eventSystem = eventSystem;</span>
+
+    // creates a new door in each direction as well setting the position of them in the room
+<span class="nc" id="L47">    doors[0] = new Door(this, DoorDirection.NORTH, 7.5f, 8f);</span>
+<span class="nc" id="L48">    doors[1] = new Door(this, DoorDirection.EAST, 15f, 4f);</span>
+<span class="nc" id="L49">    doors[2] = new Door(this, DoorDirection.SOUTH, 7.5f, 0f);</span>
+<span class="nc" id="L50">    doors[3] = new Door(this, DoorDirection.WEST, 0f, 4f);</span>
+
+    // NEW FOR ASSESSMENT 2 - sets the colour of the font for locked door message
+<span class="nc" id="L53">    font.setColor(Color.RED);</span>
+
+<span class="nc" id="L55">  }</span>
+
+  /**
+   * This method sets all the doors in the room to active.
+   * It also draws the event indicators onto the door
+   *
+   * @param room the room to set active
+   */
+  public void updateForRoom(Room room) {
+
+    // gets all adjacent rooms
+<span class="nc" id="L66">    Room[] adj = room.getAllAdjacent();</span>
+
+    // loops through these rooms and if there is a room for the direction sets it to active
+<span class="nc bnc" id="L69" title="All 2 branches missed.">    for (int i = 0; i &lt; 4; i++) {</span>
+<span class="nc bnc" id="L70" title="All 2 branches missed.">      doors[i].setActive(adj[i] != null);</span>
+
+      // sets the textures to null
+<span class="nc" id="L73">      indicatorTextures[i] = null;</span>
+
+      // checks if the room has an event type and then displays its texture
+<span class="nc bnc" id="L76" title="All 2 branches missed.">      if (adj[i] != null) {</span>
+<span class="nc" id="L77">        EventType type = adj[i].getEventType();</span>
+<span class="nc bnc" id="L78" title="All 2 branches missed.">        if (type == EventType.POSITIVE) {</span>
+<span class="nc" id="L79">          indicatorTextures[i] = positiveIndicator;</span>
+        }
+<span class="nc bnc" id="L81" title="All 2 branches missed.">        if (type == EventType.NEGATIVE) {</span>
+<span class="nc" id="L82">          indicatorTextures[i] = negativeIndicator;</span>
+        }
+      }
+    }
+<span class="nc" id="L86">  }</span>
+
+  /**
+   * This method gets the door in the specified direction.
+   *
+   * @param direction The direction of the door to retrieve
+   * @return The {@link Door} object in the specified direction
+   */
+  public Door getDoor(DoorDirection direction) {
+<span class="nc" id="L95">    return doors[direction.ordinal()];</span>
+  }
+
+  /**
+   * Sets the {@link roomFlowManager} for this object.
+   *
+   * @param roomFlowManager The {@link roomFlowManager} to associate with this object
+   */
+  public void setRoomFlowManager(RoomFlowManager roomFlowManager) {
+<span class="nc" id="L104">    this.roomFlowManager = roomFlowManager;</span>
+<span class="nc" id="L105">  }</span>
+
+  /**
+   * Returns the main LibGDX game instance.
+   *
+   * @return The main {@link EscapeGame} instance
+   */
+  public EscapeGame getGame() {
+<span class="nc" id="L113">    return game;</span>
+  }
+
+  /**
+   * This method handles the logic when a player passes through doors.
+   * It checks the doors and changes the room in that direction
+   * Handles what happens when a player encounters a locked door
+   */
+  public void update() {
+    // gets the player
+<span class="nc" id="L123">    Player player = playerController.getPlayer();</span>
+<span class="nc" id="L124">    isTouchingDoor = false;</span>
+
+    // Checks all the doors to see if the player is touching it
+    // Changes the room in that direction
+    // Ensures player moves to the next room when touching door
+<span class="nc bnc" id="L129" title="All 2 branches missed.">    for (Door d : doors) {</span>
+
+<span class="nc bnc" id="L131" title="All 4 branches missed.">      if (d.isActive &amp;&amp; player.checkCollision(d.doorSprite)) {</span>
+<span class="nc" id="L132">        Room currentRoom = roomFlowManager.getCurrentRoom();</span>
+        // NEW FOR ASSESSMENT 2
+        // Checks if the door is locked and only lets the player through if they have a key
+<span class="nc bnc" id="L135" title="All 2 branches missed.">        if (currentRoom.isLocked(d.direction)) {</span>
+<span class="nc bnc" id="L136" title="All 2 branches missed.">          if (player.hasKey()) {</span>
+<span class="nc" id="L137">            player.useKey();</span>
+<span class="nc" id="L138">            currentRoom.setLocked(d.direction, false);</span>
+          } else {
+<span class="nc" id="L140">            isTouchingDoor = true;</span>
+<span class="nc" id="L141">            return;</span>
+          }
+        }
+<span class="nc" id="L144">        roomFlowManager.changeRoom(d.direction);</span>
+<span class="nc" id="L145">        return;</span>
+      }
+    }
+<span class="nc" id="L148">  }</span>
+
+  /**
+   * This method handles drawing the doors and their event indicators.
+   */
+  public void draw() {
+    // for all the doors draw them
+<span class="nc bnc" id="L155" title="All 2 branches missed.">    for (Door d : doors) {</span>
+<span class="nc" id="L156">      d.draw();</span>
+    }
+
+    // This section adds an event indicator texture if the door has one
+<span class="nc bnc" id="L160" title="All 2 branches missed.">    if (indicatorTextures [0] != null) {</span>
+<span class="nc" id="L161">      game.batch.draw(indicatorTextures[0], 7.5f, 8f, 1f, 1f);</span>
+    }
+<span class="nc bnc" id="L163" title="All 2 branches missed.">    if (indicatorTextures [1] != null) {</span>
+<span class="nc" id="L164">      game.batch.draw(indicatorTextures[1], 15f, 4f, 1f, 1f);</span>
+    }
+<span class="nc bnc" id="L166" title="All 2 branches missed.">    if (indicatorTextures [2] != null) {</span>
+<span class="nc" id="L167">      game.batch.draw(indicatorTextures[2], 7.5f, 0f, 1f, 1f);</span>
+    }
+<span class="nc bnc" id="L169" title="All 2 branches missed.">    if (indicatorTextures [3] != null) {</span>
+<span class="nc" id="L170">      game.batch.draw(indicatorTextures[3], 0f, 4f, 1f, 1f);</span>
+    }
+<span class="nc" id="L172">  }</span>
+
+  /**
+   * NEW FOR ASSESSMENT 2.
+   * Draws the ui related to the door
+   * If the player is touching the door and its locked, it display the message
+   */
+  public void drawUI() {
+<span class="nc bnc" id="L180" title="All 2 branches missed.">    if (isTouchingDoor) {</span>
+      // NEW FOR ASSESSMENT 2
+      // Used to register the event as negative upon touching the door
+<span class="nc bnc" id="L183" title="All 2 branches missed.">      if (addedEvent == false) {</span>
+<span class="nc" id="L184">        eventSystem.registerEvent(EventType.NEGATIVE);</span>
+<span class="nc" id="L185">        addedEvent = true;</span>
+      }
+
+      // sets the font scale, message and calculates text layout for propper positioning
+<span class="nc" id="L189">      font.getData().setScale(3f);</span>
+<span class="nc" id="L190">      String message = &quot;This door is Locked! Find a key to get through.&quot;;</span>
+<span class="nc" id="L191">      GlyphLayout layout = new GlyphLayout(font, message);</span>
+
+<span class="nc" id="L193">      float uiWidth = game.uiViewport.getWorldWidth();</span>
+<span class="nc" id="L194">      float uiHeight = game.uiViewport.getWorldHeight();</span>
+
+      // calculates the position of the text, centred horizontally and placed near the top
+<span class="nc" id="L197">      float textX = (uiWidth - layout.width) / 2f;</span>
+<span class="nc" id="L198">      float textY = uiHeight * 0.9f;</span>
+
+<span class="nc" id="L200">      font.draw(game.batch, layout, textX, textY);</span>
+
+    }
+
+<span class="nc" id="L204">  }</span>
+
+  /**
+   * Cleans up the asset used in the class.
+   */
+  public void dispose() {
+<span class="nc bnc" id="L210" title="All 2 branches missed.">    for (Door d : doors) {</span>
+<span class="nc" id="L211">      d.dispose();</span>
+    }
+<span class="nc" id="L213">    positiveIndicator.dispose();</span>
+<span class="nc" id="L214">    negativeIndicator.dispose();</span>
+<span class="nc" id="L215">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

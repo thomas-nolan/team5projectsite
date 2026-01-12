@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PauseMenu.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.github.team10.escapefromuni</a> &gt; <span class="el_source">PauseMenu.java</span></div><h1>PauseMenu.java</h1><pre class="source lang-java linenums">package io.github.team10.escapefromuni;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector3;
+/**
+ * Pause menu displayed during gameplay.
+ * triggered by ESC key. shows paused timer and the options; Resume, Exit.
+ */
+public class PauseMenu implements Screen {
+
+    private final EscapeGame game;
+    private final UIController uiController;
+    private final GameScreen gameScreen;
+    private BitmapFont font;
+    private GlyphLayout layout;
+    private int pausedTime;
+    private Texture backgroundImage;
+    private Texture buttonTexture;
+
+    // Button rectangles
+    private Rectangle resumeButton;
+    private Rectangle settingsButton;
+    private Rectangle exitButton;
+
+    // Button states
+    private boolean resumeHovered;
+    private boolean settingsHovered;
+    private boolean exitHovered;
+
+    /**
+     * Constructor for PauseMenu
+     * @param game
+     * @param uiController
+     * @param gameScreen
+     * @param pausedTime
+     */
+<span class="nc" id="L44">    public PauseMenu(EscapeGame game, UIController uiController, GameScreen gameScreen, int pausedTime) {</span>
+<span class="nc" id="L45">        this.game = game;</span>
+<span class="nc" id="L46">        this.uiController = uiController;</span>
+<span class="nc" id="L47">        this.gameScreen = gameScreen;</span>
+<span class="nc" id="L48">        this.pausedTime = pausedTime;</span>
+<span class="nc" id="L49">    }</span>
+
+    @Override
+    public void show() {
+        //button designings
+<span class="nc" id="L54">        backgroundImage = new Texture(Gdx.files.internal(&quot;pausemenu_background.png&quot;));</span>
+<span class="nc" id="L55">        buttonTexture = new Texture(Gdx.files.internal(&quot;ButtonBG.png&quot;));</span>
+
+<span class="nc" id="L57">        font = game.font;</span>
+<span class="nc" id="L58">        layout = new GlyphLayout();</span>
+
+<span class="nc" id="L60">        float buttonWidth = 600f;</span>
+<span class="nc" id="L61">        float buttonHeight = 100f;</span>
+<span class="nc" id="L62">        float screenWidth = game.uiViewport.getWorldWidth();</span>
+<span class="nc" id="L63">        float centerX = screenWidth / 2f;</span>
+
+        //buttons positioning
+<span class="nc" id="L66">        resumeButton = new Rectangle(centerX - buttonWidth / 2f, 500f, buttonWidth, buttonHeight);</span>
+<span class="nc" id="L67">        settingsButton = new Rectangle(centerX - buttonWidth / 2f, 350f, buttonWidth, buttonHeight);</span>
+<span class="nc" id="L68">        exitButton = new Rectangle(centerX - buttonWidth / 2f, 200f, buttonWidth, buttonHeight);</span>
+
+<span class="nc" id="L70">        AudioManager.getInstance().playMenuMusic();</span>
+<span class="nc" id="L71">    }</span>
+
+    /**
+     * Used to display the Pause Menu
+     */
+    public void display() {
+<span class="nc" id="L77">        game.viewport.apply();</span>
+<span class="nc" id="L78">        game.batch.setProjectionMatrix(game.viewport.getCamera().combined);</span>
+<span class="nc" id="L79">        game.batch.begin();</span>
+<span class="nc" id="L80">        game.batch.draw(backgroundImage, 0, 0, game.viewport.getWorldWidth(), game.viewport.getWorldHeight());</span>
+<span class="nc" id="L81">        game.batch.end();</span>
+
+        //UI
+<span class="nc" id="L84">        game.uiViewport.apply();</span>
+<span class="nc" id="L85">        game.batch.setProjectionMatrix(game.uiCamera.combined);</span>
+<span class="nc" id="L86">        game.batch.begin();</span>
+
+<span class="nc" id="L88">        String title = &quot;You pulled out 'Exceptional Circumstances' card on dean&quot;;</span>
+<span class="nc" id="L89">        layout.setText(font, title);</span>
+<span class="nc" id="L90">        float titleX = (game.uiViewport.getWorldWidth() - layout.width) / 2f;</span>
+<span class="nc" id="L91">        float titleY = 750f;</span>
+<span class="nc" id="L92">        font.setColor(Color.YELLOW);</span>
+<span class="nc" id="L93">        font.draw(game.batch, layout, titleX, titleY);</span>
+
+        // Pause menu timer
+<span class="nc" id="L96">        showPausedTimer(pausedTime);</span>
+<span class="nc" id="L97">        int minutes = pausedTime / 60;</span>
+<span class="nc" id="L98">        int seconds = pausedTime % 60;</span>
+<span class="nc" id="L99">        String timeText = String.format(&quot;Time: %02d:%02d&quot;, minutes, seconds);</span>
+<span class="nc" id="L100">        layout.setText(font, timeText);</span>
+<span class="nc" id="L101">        float timeX = (game.uiViewport.getWorldWidth() - layout.width) / 2f;</span>
+<span class="nc" id="L102">        float timeY = 650f;</span>
+<span class="nc" id="L103">        font.setColor(Color.WHITE);</span>
+<span class="nc" id="L104">        font.draw(game.batch, layout, timeX, timeY);</span>
+
+        // Buttons
+<span class="nc" id="L107">        drawButton(resumeButton, &quot;Resume&quot;, resumeHovered);</span>
+<span class="nc" id="L108">        drawButton(settingsButton, &quot;Settings&quot;, settingsHovered);</span>
+<span class="nc" id="L109">        drawButton(exitButton, &quot;Exit to Menu&quot;, exitHovered);</span>
+
+<span class="nc" id="L111">        game.batch.end();</span>
+<span class="nc" id="L112">    }</span>
+
+    /**
+     * Draws the button for the pause menu
+     * @param button
+     * @param text
+     * @param hovered
+     */
+    private void drawButton(Rectangle button, String text, boolean hovered) {
+<span class="nc bnc" id="L121" title="All 2 branches missed.">        if (hovered) {</span>
+<span class="nc" id="L122">            game.batch.setColor(1f, 1f, 0.5f, 1f);</span>
+        } else {
+<span class="nc" id="L124">            game.batch.setColor(Color.WHITE);</span>
+        }
+<span class="nc" id="L126">        game.batch.draw(buttonTexture, button.x, button.y, button.width, button.height);</span>
+<span class="nc" id="L127">        game.batch.setColor(Color.WHITE);</span>
+
+<span class="nc" id="L129">        layout.setText(font, text);</span>
+<span class="nc" id="L130">        float textX = button.x + (button.width - layout.width) / 2f;</span>
+<span class="nc" id="L131">        float textY = button.y + (button.height + layout.height) / 2f;</span>
+
+<span class="nc" id="L133">        font.setColor(Color.WHITE);</span>
+<span class="nc" id="L134">        font.draw(game.batch, layout, textX, textY);</span>
+<span class="nc" id="L135">    }</span>
+
+    //click detection
+    private boolean isButtonClicked(Rectangle button) {
+<span class="nc bnc" id="L139" title="All 2 branches missed.">        if (Gdx.input.justTouched()) {</span>
+<span class="nc" id="L140">            Vector3 touchPos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);</span>
+<span class="nc" id="L141">            game.uiCamera.unproject(touchPos);</span>
+<span class="nc bnc" id="L142" title="All 2 branches missed.">            if (button.contains(touchPos.x, touchPos.y)) {</span>
+<span class="nc" id="L143">                AudioManager.getInstance().playClickSound();</span>
+<span class="nc" id="L144">                return true;</span>
+            }
+        }
+<span class="nc" id="L147">        return false;</span>
+    }
+
+    /** Detects if the button is being hovered over
+     * by the player.
+     * @param button
+     * @return - True if hovered, false if not
+     */
+    private boolean isButtonHovered(Rectangle button) {
+<span class="nc" id="L156">        Vector3 mousePos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);</span>
+<span class="nc" id="L157">        game.uiCamera.unproject(mousePos);</span>
+<span class="nc" id="L158">        return button.contains(mousePos.x, mousePos.y);</span>
+    }
+
+    /**
+     * Shows paused timer with ELAPSED TIME
+     * @param time - Elapsed Time
+     */
+    public void showPausedTimer(int time) {
+<span class="nc" id="L166">        this.pausedTime = time;</span>
+<span class="nc" id="L167">    }</span>
+
+    /**
+     * Resumes game when triggered
+     */
+    public void onResume() {
+<span class="nc" id="L173">        System.out.println(&quot;Resuming game...&quot;);</span>
+<span class="nc" id="L174">        uiController.resumeGame(gameScreen);</span>
+<span class="nc" id="L175">        dispose();</span>
+<span class="nc" id="L176">    }</span>
+
+    /**
+     * Opens settings menu from pause menu
+     */
+    public void onSettings() {
+<span class="nc" id="L182">        System.out.println(&quot;Opening settings from pause menu...&quot;);</span>
+<span class="nc" id="L183">        uiController.showSettings(this);</span>
+<span class="nc" id="L184">        dispose();</span>
+<span class="nc" id="L185">    }</span>
+
+    /**
+     * Returns to main menu from the pause menu.
+     */
+    public void onExit() {
+<span class="nc" id="L191">        System.out.println(&quot;Returning to main menu...&quot;);</span>
+<span class="nc" id="L192">        gameScreen.dispose();</span>
+<span class="nc" id="L193">        uiController.showMainMenu();</span>
+<span class="nc" id="L194">        dispose();</span>
+<span class="nc" id="L195">    }</span>
+
+    /**
+     * Rendering for the pause menu, runs every frame
+     * @param delta - The time between frames
+     */
+    @Override
+    public void render(float delta) {
+<span class="nc" id="L203">        Gdx.gl.glClearColor(0, 0, 0, 0.8f);</span>
+<span class="nc" id="L204">        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);</span>
+
+<span class="nc" id="L206">        resumeHovered = isButtonHovered(resumeButton);</span>
+<span class="nc" id="L207">        settingsHovered = isButtonHovered(settingsButton);</span>
+<span class="nc" id="L208">        exitHovered = isButtonHovered(exitButton);</span>
+
+<span class="nc bnc" id="L210" title="All 2 branches missed.">        if (isButtonClicked(resumeButton)) {</span>
+<span class="nc" id="L211">            onResume();</span>
+<span class="nc bnc" id="L212" title="All 2 branches missed.">        } else if (isButtonClicked(settingsButton)) {</span>
+<span class="nc" id="L213">            onSettings();</span>
+<span class="nc bnc" id="L214" title="All 2 branches missed.">        } else if (isButtonClicked(exitButton)) {</span>
+<span class="nc" id="L215">            onExit();</span>
+        }
+
+<span class="nc" id="L218">        display();</span>
+<span class="nc" id="L219">    }</span>
+
+    @Override
+    public void resize(int width, int height) {
+<span class="nc" id="L223">        game.uiViewport.update(width, height, true);</span>
+<span class="nc" id="L224">    }</span>
+
+    @Override
+<span class="nc" id="L227">    public void pause() {}</span>
+
+    @Override
+<span class="nc" id="L230">    public void resume() {}</span>
+
+    @Override
+<span class="nc" id="L233">    public void hide() {}</span>
+
+    /**
+     * Dispose images and textures when no longer needed.
+     */
+    @Override
+    public void dispose() {
+<span class="nc" id="L240">        backgroundImage.dispose();</span>
+<span class="nc" id="L241">        buttonTexture.dispose();</span>
+<span class="nc" id="L242">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

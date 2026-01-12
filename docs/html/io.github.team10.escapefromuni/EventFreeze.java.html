@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EventFreeze.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.github.team10.escapefromuni</a> &gt; <span class="el_source">EventFreeze.java</span></div><h1>EventFreeze.java</h1><pre class="source lang-java linenums">package io.github.team10.escapefromuni;
+
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.Vector2;
+
+/**
+ * NEW FOR ASSESSMENT 2.
+ * Class for positive event.
+ * This event freezes the timer and the dean for a fixed period of time.
+ * It is activated by collecting the freeze pickup.
+ */
+public class EventFreeze implements IEvent {
+
+  // Texture and sprite used to render the freeze event
+  private final Texture freezeTexture;
+  private Sprite freezeSprite;
+
+  // References to core game systems required for the event
+  private Timer timer;
+  private boolean eventFinished;
+  private final EventType type;
+  private Player player;
+  private EscapeGame game;
+
+  // Tracks the events state
+  private final EventSystem eventSystem;
+<span class="nc" id="L28">  private boolean used = false;</span>
+
+  /**
+   * NEW FOR ASSESSMENT 2.
+   * Constructor used to create a new freeze event.
+   *
+   * @param player the player controlled by the user
+   * @param game the main LibGDX game instance
+   * @param timer the games timer
+   * @param eventSystem the central events manager
+   */
+<span class="nc" id="L39">  public EventFreeze(Player player, EscapeGame game, Timer timer, EventSystem eventSystem) {</span>
+<span class="nc" id="L40">    this.player = player;</span>
+<span class="nc" id="L41">    this.game = game;</span>
+<span class="nc" id="L42">    this.type = EventType.POSITIVE;</span>
+<span class="nc" id="L43">    freezeTexture = new Texture(&quot;timer.png&quot;);</span>
+<span class="nc" id="L44">    this.timer = timer;</span>
+<span class="nc" id="L45">    this.eventFinished = false;</span>
+<span class="nc" id="L46">    this.eventSystem = eventSystem;</span>
+<span class="nc" id="L47">  }</span>
+
+  /**
+   * NEW FOR ASSESSMENT 2.
+   * Returns the type of event
+   */
+  @Override
+  public EventType getType() {
+<span class="nc" id="L55">    return type;</span>
+  }
+
+  /**
+   * NEW FOR ASSESSMENT 2.
+   * Initialises the freeze event.
+   */
+  public void startEvent() {
+<span class="nc bnc" id="L63" title="All 2 branches missed.">    if (eventFinished) {</span>
+<span class="nc" id="L64">      return;</span>
+    }
+
+    // Creates a new sprite setting its texture, size and position
+<span class="nc" id="L68">    freezeSprite = new Sprite(freezeTexture);</span>
+<span class="nc" id="L69">    freezeSprite.setSize(2f, 1f);</span>
+<span class="nc" id="L70">    freezeSprite.setPosition(7.5f, 5.5f);</span>
+    // AudioManager.getInstance().playEventSound(this.type);
+<span class="nc" id="L72">  }</span>
+
+  /**
+   * NEW FOR ASSESSMENT 2.
+   * End the event, cleaning up any resources once the event has been used.
+   */
+  public void endEvent() {
+<span class="nc bnc" id="L79" title="All 4 branches missed.">    if (!eventFinished &amp;&amp; used) {</span>
+<span class="nc" id="L80">      eventFinished = true;</span>
+<span class="nc" id="L81">      freezeTexture.dispose();</span>
+    }
+<span class="nc" id="L83">  }</span>
+
+  /**
+   * NEW FOR ASSESSMENT 2.
+   * Updates the events logic each frame.
+   */
+  public void update(float delta) {
+<span class="nc bnc" id="L90" title="All 2 branches missed.">    if (!used) {</span>
+<span class="nc" id="L91">      float playerDist = getPlayerFreezeDist();</span>
+<span class="nc bnc" id="L92" title="All 2 branches missed.">      if (playerDist &lt; 1f) {</span>
+<span class="nc" id="L93">        pickupFreeze();</span>
+      }
+    }
+<span class="nc" id="L96">  }</span>
+
+  /**
+   * NEW FOR ASSESSMENT 2.
+   * Calculates the distance between the player and the freeze event pickup.
+   *
+   * @return The distance between the player and the centre of the freeze pickup
+   */
+  private float getPlayerFreezeDist() {
+<span class="nc" id="L105">    Vector2 playerPos = player.getCenter();</span>
+<span class="nc" id="L106">    float freezeX = freezeSprite.getX() + freezeSprite.getWidth() / 2f;</span>
+<span class="nc" id="L107">    float freezeY = freezeSprite.getY() + freezeSprite.getHeight() / 2f;</span>
+<span class="nc" id="L108">    Vector2 freezeCenter = new Vector2(freezeX, freezeY);</span>
+<span class="nc" id="L109">    return freezeCenter.dst(playerPos);</span>
+  }
+
+  /**
+   * NEW FOR ASSESSMENT 2.
+   * Handles the collection of the freeze pick up.
+   * Registers the event type.
+   */
+  private void pickupFreeze() {
+<span class="nc" id="L118">    used = true;</span>
+    // Implement here
+<span class="nc" id="L120">    eventSystem.registerEvent(type);</span>
+    // Stops the timer upon pick up
+<span class="nc" id="L122">    timer.setFrozen();</span>
+<span class="nc" id="L123">  }</span>
+
+  /**
+   * NEW FOR ASSESSMENT 2.
+   * Renders the freeze pickup while it has not been used.
+   */
+  public void draw() {
+<span class="nc bnc" id="L130" title="All 2 branches missed.">    if (!used) {</span>
+<span class="nc" id="L131">      freezeSprite.draw(game.batch);</span>
+    }
+<span class="nc" id="L133">  }</span>
+
+  /**
+   * NEW FOR ASSESSMENT 2.
+   * Used to draw the UI for the event.
+   * Not needed as there is no UI.
+   */
+  @Override
+<span class="nc" id="L141">  public void drawUI() {}</span>
+
+  @Override
+  public boolean IsFinished() {
+<span class="nc" id="L145">    return eventFinished;</span>
+  }
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

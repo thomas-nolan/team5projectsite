@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EscapeGame.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.github.team10.escapefromuni</a> &gt; <span class="el_source">EscapeGame.java</span></div><h1>EscapeGame.java</h1><pre class="source lang-java linenums">package io.github.team10.escapefromuni;
+
+import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+
+/**
+ * NEW TO ASSESSMENT 2
+ * Class to represent the main LibGDX game instance.
+ * Instantiated by the Launcher and is responsible for initialising core
+ * game systems such as rendering SpriteBatch batch and the initial screen.
+ * Similar to the Drop class in https://libgdx.com/wiki/start/simple-game-extended.
+ */
+<span class="nc" id="L21">public class EscapeGame extends Game {</span>
+  public SpriteBatch batch;
+  public BitmapFont font;
+
+  // World rendering
+  public FitViewport viewport;
+
+  // UI rendering
+  public OrthographicCamera uiCamera;
+  public FitViewport uiViewport;
+
+  public GameController gameController;
+  public UIController uiController;
+
+  /**
+   * Called when the game is first created.
+   * Initialises rendering components, viewport, controllers
+   * as well as loading the main menu
+   */
+  @Override
+  public void create() {
+<span class="nc" id="L42">    batch = new SpriteBatch();</span>
+
+    // UI and world rendering set up
+<span class="nc" id="L45">    viewport = new FitViewport(16, 9);</span>
+<span class="nc" id="L46">    uiCamera = new OrthographicCamera();</span>
+<span class="nc" id="L47">    uiViewport = new FitViewport(1920, 1080, uiCamera);</span>
+
+    // Generates the default font
+<span class="nc" id="L50">    generateFont();</span>
+
+    // Initialises the controllers
+<span class="nc" id="L53">    this.uiController = new UIController(this, null);</span>
+<span class="nc" id="L54">    this.gameController = new GameController(this, uiController);</span>
+<span class="nc" id="L55">    uiController.setGameController(gameController);</span>
+
+    // Shows the main menu
+<span class="nc" id="L58">    uiController.showMainMenu();</span>
+<span class="nc" id="L59">  }</span>
+
+  /**
+   * Initialise the game's default font.
+   */
+  private void generateFont() {
+
+    // Loads the game's main UI font from internal assets
+<span class="nc" id="L67">    final FreeTypeFontGenerator generator =</span>
+        new FreeTypeFontGenerator(
+<span class="nc" id="L69">        Gdx.files.internal(&quot;Kenney Mini.ttf&quot;));</span>
+<span class="nc" id="L70">    FreeTypeFontParameter parameter = new FreeTypeFontParameter();</span>
+
+    // Sets the font size and colour
+<span class="nc" id="L73">    parameter.size = 48;</span>
+<span class="nc" id="L74">    parameter.color = Color.WHITE;</span>
+
+<span class="nc" id="L76">    parameter.magFilter = Texture.TextureFilter.Nearest;</span>
+<span class="nc" id="L77">    parameter.minFilter = Texture.TextureFilter.Nearest;</span>
+
+    // Sets the bitmap font using the configured parameters
+<span class="nc" id="L80">    font = generator.generateFont(parameter);</span>
+<span class="nc" id="L81">    generator.dispose();</span>
+<span class="nc" id="L82">  }</span>
+
+  /**
+   * This method is called when the game window is resized.
+   * It updates both the viewport and the uiViewport to maintain correct scaling
+   */
+  @Override
+  public void resize(int width, int height) {
+<span class="nc" id="L90">    viewport.update(width, height, true);</span>
+<span class="nc" id="L91">    uiViewport.update(width, height, true);</span>
+<span class="nc" id="L92">  }</span>
+
+  /**
+   * Called every frame to render the game.
+   */
+  @Override
+  public void render() {
+<span class="nc" id="L99">    super.render();</span>
+<span class="nc" id="L100">  }</span>
+
+  /**
+   * Cleans up the shared resources when the game exits.
+   */
+  @Override
+  public void dispose() {
+<span class="nc" id="L107">    batch.dispose();</span>
+<span class="nc" id="L108">    font.dispose();</span>
+<span class="nc" id="L109">    AudioManager.getInstance().dispose();</span>
+<span class="nc" id="L110">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Timer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.github.team10.escapefromuni</a> &gt; <span class="el_source">Timer.java</span></div><h1>Timer.java</h1><pre class="source lang-java linenums">package io.github.team10.escapefromuni;
+
+/**
+ * A class that manages the game timer.
+ * The game timer starts at 300 seconds (5 minutes) and counts down to zero
+ * This class also manages the timer for the freeze event (Lasts 30 seconds on normal difficulty)
+ */
+public class Timer {
+
+    private float time;
+    private float timeLeft;
+    private boolean isFrozen;
+    private float frozenTimer;
+
+
+    /**
+     * Constructor for the timer, initialises all values
+     * The value of the frozen timer depends on the difficulty (Default 30 seconds)
+     */
+<span class="fc" id="L20">    public Timer() {</span>
+<span class="fc" id="L21">        this.time = 0;</span>
+<span class="fc" id="L22">        this.timeLeft = 300; // start at 300 seconds</span>
+<span class="fc" id="L23">        this.frozenTimer = 30;</span>
+<span class="fc" id="L24">        this.isFrozen = false;</span>
+<span class="fc" id="L25">    }</span>
+
+    /**
+     * Checks each frame if the frozen event is triggered.
+     * Decreases the timer and frozen timer (if it is active)
+     * @param delta
+     */
+    public void update(float delta) {
+<span class="fc bfc" id="L33" title="All 2 branches covered.">        if (!isFrozen) {</span>
+<span class="fc" id="L34">            this.frozenTimer = 30 ;</span>
+<span class="fc" id="L35">            time += delta;</span>
+<span class="fc" id="L36">            timeLeft -= delta;</span>
+<span class="fc bfc" id="L37" title="All 2 branches covered.">            if (timeLeft &lt; 0) {</span>
+<span class="fc" id="L38">                timeLeft = 0;</span>
+            }
+        }
+        else {
+<span class="fc" id="L42">            frozenTimer -= delta;</span>
+<span class="pc bpc" id="L43" title="1 of 2 branches missed.">            if (frozenTimer &lt;= 0) {</span>
+<span class="fc" id="L44">                isFrozen = false;</span>
+            }
+        }
+<span class="fc" id="L47">    }</span>
+
+    public float getTime() {
+<span class="fc" id="L50">        return time;</span>
+    }
+
+    public int getTimeSeconds() {
+<span class="nc" id="L54">        return (int) time;</span>
+    }
+
+    public int getTimeLeftSeconds() {
+<span class="fc" id="L58">        return (int) timeLeft;</span>
+    }
+
+    public boolean hasReached(float seconds) {
+<span class="fc bfc" id="L62" title="All 2 branches covered.">        return time &gt;= seconds;</span>
+    }
+
+    public boolean isFinished() {
+<span class="fc bfc" id="L66" title="All 2 branches covered.">        return timeLeft &lt;= 0;</span>
+    }
+
+    /**
+     * Sets frozen to true when the event is triggered
+     */
+    public void setFrozen() {
+<span class="fc" id="L73">        isFrozen = true;</span>
+<span class="fc" id="L74">    }</span>
+
+    /**
+     * Resets the timer to the default values
+     */
+    public void reset() {
+<span class="fc" id="L80">        time = 0;</span>
+<span class="fc" id="L81">        timeLeft = 300;</span>
+<span class="fc" id="L82">        isFrozen = false;</span>
+<span class="fc" id="L83">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AchievementManager.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.github.team10.escapefromuni</a> &gt; <span class="el_source">AchievementManager.java</span></div><h1>AchievementManager.java</h1><pre class="source lang-java linenums">package io.github.team10.escapefromuni;
+
+import java.util.HashMap;
+
+/**
+ * NEW FOR ASSESSMENT 2
+ * This is a class which manages the achievements in the game.
+ */
+public class AchievementManager {
+
+<span class="fc" id="L11">  HashMap&lt;String, Boolean&gt; achievements = new HashMap&lt;String, Boolean&gt;();</span>
+
+  /**
+   * NEW FOR ASSESSMENT 2
+   * This constructor sets the achievements which you can get and sets them to false.
+   */
+<span class="fc" id="L17">  public AchievementManager() {</span>
+
+    // 'No incorrect answers' is true by default, you lose the achievement
+    //  if you fail a question
+
+<span class="fc" id="L22">    achievements.put(&quot;Complete game&quot;, false);</span>
+<span class="fc" id="L23">    achievements.put(&quot;Speedrun&quot;, false);</span>
+<span class="fc" id="L24">    achievements.put(&quot;All positive events&quot;, false);</span>
+<span class="fc" id="L25">    achievements.put(&quot;All negative events&quot;, false);</span>
+<span class="fc" id="L26">    achievements.put(&quot;All hidden events&quot;, false);</span>
+<span class="fc" id="L27">    achievements.put(&quot;Find Long Boi&quot;, false);</span>
+<span class="fc" id="L28">    achievements.put(&quot;No incorrect answers&quot;, true);</span>
+
+<span class="fc" id="L30">  }</span>
+
+  /**
+   * NEW FOR ASSESSMENT 2
+   * This method adds achievements to the game.
+   *
+   * @param achievementName The name of the achievement you wish to add
+   */
+  public void addAchievement(String achievementName) {
+
+<span class="fc" id="L40">    achievements.put(achievementName, true);</span>
+
+<span class="fc" id="L42">  }</span>
+
+  /**
+   * NEW FOR ASSESSMENT 2
+   * This method is used to mark achievements as not completed.
+   *
+   * @param achievementName The name of the achievement you wish to remove
+   */
+  public void removeAchievement(String achievementName) {
+
+<span class="fc" id="L52">    achievements.put(achievementName, false);</span>
+
+<span class="fc" id="L54">  }</span>
+
+  /**
+   * NEW FOR ASSESSMENT 2
+   * Returns the number of completed achievements.
+   *
+   * @return The number of achievements
+   */
+  public int getTotalAchievements() {
+
+<span class="fc" id="L64">    int total = 0;</span>
+
+<span class="fc bfc" id="L66" title="All 2 branches covered.">    for (Boolean i : achievements.values()) {</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">      if (i) {</span>
+<span class="fc" id="L68">        total += 1;</span>
+      }
+<span class="fc" id="L70">    }</span>
+
+<span class="fc" id="L72">    return total;</span>
+  }
+
+  /**
+   * NEW FOR ASSESSMENT 2
+   * Gets all the achievement the player has completed.
+   *
+   * @return An array containing the completed achievements
+   */
+  public String[] getAchievements() {
+
+<span class="fc" id="L83">    String[] currentAchievements = new String[getTotalAchievements()];</span>
+
+<span class="fc" id="L85">    int index = 0;</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">    for (String key : achievements.keySet()) {</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">      if (achievements.get(key)) {</span>
+<span class="fc" id="L88">        currentAchievements[index] = key;</span>
+<span class="fc" id="L89">        index += 1;</span>
+
+      }
+<span class="fc" id="L92">    }</span>
+
+<span class="fc" id="L94">    return currentAchievements;</span>
+
+  }
+
+  /**
+   * NEW FOR ASSESSMENT 2
+   * This resets all the achievements marking them as incomplete.
+   */
+  public void reset() {
+
+<span class="fc" id="L104">    achievements.put(&quot;Complete game&quot;, false);</span>
+<span class="fc" id="L105">    achievements.put(&quot;Speedrun&quot;, false);</span>
+<span class="fc" id="L106">    achievements.put(&quot;All positive events&quot;, false);</span>
+<span class="fc" id="L107">    achievements.put(&quot;All negative events&quot;, false);</span>
+<span class="fc" id="L108">    achievements.put(&quot;All hidden events&quot;, false);</span>
+<span class="fc" id="L109">    achievements.put(&quot;Find Long Boi&quot;, false);</span>
+<span class="fc" id="L110">    achievements.put(&quot;No incorrect answers&quot;, true);</span>
+<span class="fc" id="L111">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

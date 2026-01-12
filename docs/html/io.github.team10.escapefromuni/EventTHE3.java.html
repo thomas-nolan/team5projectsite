@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EventTHE3.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.github.team10.escapefromuni</a> &gt; <span class="el_source">EventTHE3.java</span></div><h1>EventTHE3.java</h1><pre class="source lang-java linenums">package io.github.team10.escapefromuni;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector3;
+import java.util.HashMap;
+import java.util.Random;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Updated for Assessment 2
+ *
+ * Represents the THE3 exam negative event.
+ * This event temporarily disables player movement,
+ * displays a quiz question with TRUE/FALSE buttons, and provides
+ * feedback based on the player's answer. If the player gets the answer
+ * correct the score increases, otherwise the
+ * player is slowed down.
+ */
+public class EventTHE3 implements IEvent {
+
+  // NEW FOR ASSESSMENT 2 - sets up the systems and controllers needed for the event
+  private final ScoreManager scoreManager;
+  private final Player player;
+  private final EscapeGame game;
+  private final EventType type;
+  private final AchievementManager achievementManager;
+  private final EventSystem eventSystem;
+
+<span class="nc" id="L35">  private boolean eventFinished = false;</span>
+
+  // Sets up the textures needed for the event
+  private final Texture titlePanelTexture;
+  private final Texture questionPanelTexture;
+  private final Texture trueButtonTexture;
+  private final Texture falseButtonTexture;
+
+  // Sets up the sprites to be used for the event
+  private final Sprite titlePanelSprite;
+  private final Sprite questionPanelSprite;
+  private final Sprite trueButtonSprite;
+  private final Sprite falseButtonSprite;
+
+<span class="nc" id="L49">  private boolean questionAnswered = false;</span>
+<span class="nc" id="L50">  private float answerDisplayTimer = 0f;</span>
+
+  private String questionText;
+<span class="nc" id="L53">  private String feedbackText = &quot;&quot;;</span>
+
+  // Sets up the hit box for the buttons
+  private Rectangle trueButtonBounds;
+  private Rectangle falseButtonBounds;
+
+  private HashMap&lt;String, Boolean&gt; questions;
+  private Random randomNum;
+
+  // NEW FOR ASSESSMENT 2 - Modifies the type of questions being asked
+<span class="nc" id="L63">  private DifficultySetup diffSetup = new DifficultySetup();</span>
+
+  /**
+   * EXTENDS ON FROM ASSESSMENT 1.
+   * It is used to set up the systems needed as well as the
+   * textures and the UI for the question.
+   *
+   * @param player the player controlled by the user
+   * @param game the main LibGDX game instance
+   * @param scoreManager the manager which handles the players score
+   * @param achievementManager the manager which handles the players achievement
+   * @param eventSystem the central manager for the events
+   */
+  public EventTHE3(Player player, EscapeGame game, ScoreManager scoreManager,
+<span class="nc" id="L77">      AchievementManager achievementManager, EventSystem eventSystem) {</span>
+
+<span class="nc" id="L79">    this.player = player;</span>
+<span class="nc" id="L80">    this.game = game;</span>
+<span class="nc" id="L81">    this.eventSystem = eventSystem;</span>
+<span class="nc" id="L82">    this.scoreManager = scoreManager;</span>
+<span class="nc" id="L83">    this.questions = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L84">    this.type = EventType.NEGATIVE;</span>
+<span class="nc" id="L85">    this.achievementManager = achievementManager;</span>
+
+    // Creates the hash map for the questions
+<span class="nc" id="L88">    this.questions = new HashMap&lt;String, Boolean&gt;();</span>
+
+    // Sets up the textures used
+<span class="nc" id="L91">    titlePanelTexture = new Texture(&quot;UI/Blue4x1Panel.png&quot;);</span>
+<span class="nc" id="L92">    questionPanelTexture = new Texture(&quot;UI/BlueBorder10x3Panel.png&quot;);</span>
+<span class="nc" id="L93">    trueButtonTexture = new Texture(&quot;UI/GreenBorder5x2Panel.png&quot;);</span>
+<span class="nc" id="L94">    falseButtonTexture = new Texture(&quot;UI/OrangeBorder5x2Panel.png&quot;);</span>
+
+    // Creates the needed sprites with their texture
+<span class="nc" id="L97">    titlePanelSprite = new Sprite(titlePanelTexture);</span>
+<span class="nc" id="L98">    questionPanelSprite = new Sprite(questionPanelTexture);</span>
+<span class="nc" id="L99">    trueButtonSprite = new Sprite(trueButtonTexture);</span>
+<span class="nc" id="L100">    falseButtonSprite = new Sprite(falseButtonTexture);</span>
+<span class="nc" id="L101">  }</span>
+
+  /**
+   * Returns the event type.
+   */
+  @Override
+  public EventType getType() {
+<span class="nc" id="L108">    return type;</span>
+  }
+
+  /**
+   * Returns a boolean value depending on if the game is finished.
+   */
+  @Override
+  public boolean IsFinished() {
+<span class="nc" id="L116">    return eventFinished;</span>
+  }
+
+
+  /**
+   * EXTENDED FROM ASSESSMENT 1.
+   * Starts the event by disabling player movement and initialising the quiz UI.
+   * Does nothing if the event has already finished previously.
+   */
+  @Override
+  public void startEvent() {
+<span class="nc bnc" id="L127" title="All 2 branches missed.">    if (eventFinished) {</span>
+<span class="nc" id="L128">      return;</span>
+    }
+
+    // Stops the player from moving and sets up the event
+<span class="nc" id="L132">    player.enableMovement(false);</span>
+<span class="nc" id="L133">    AudioManager.getInstance().playEventSound(this.type);</span>
+<span class="nc" id="L134">    questionAnswered = false;</span>
+    // NEW FOR ASSESSMENT 2 - adds a count to the negative events counter
+<span class="nc" id="L136">    eventSystem.registerEvent(EventType.NEGATIVE);</span>
+<span class="nc" id="L137">    initialiseQuizUI();</span>
+<span class="nc" id="L138">  }</span>
+
+  /**
+   * Initialises and positions all UI components for the quiz screen.
+   * This includes a title, question display and two buttons (true or false).
+   */
+  private void initialiseQuizUI() {
+
+    // Used to select a random question
+<span class="nc" id="L147">    randomNum = new Random();</span>
+<span class="nc" id="L148">    initialiseQuestions();</span>
+
+<span class="nc" id="L150">    feedbackText = &quot;&quot;;</span>
+<span class="nc" id="L151">    questionText = selectQuestion();</span>
+
+<span class="nc" id="L153">    float uiWidth = game.uiViewport.getWorldWidth();</span>
+<span class="nc" id="L154">    float uiHeight = game.uiViewport.getWorldHeight();</span>
+
+    // Sets the size and position for the panel
+<span class="nc" id="L157">    titlePanelSprite.setSize(480f, 120f);</span>
+<span class="nc" id="L158">    titlePanelSprite.setCenter(uiWidth / 2f, uiHeight * 0.75f);</span>
+
+    // Sets the size and position of the question
+<span class="nc" id="L161">    questionPanelSprite.setSize(1200f, 360f);</span>
+<span class="nc" id="L162">    questionPanelSprite.setCenter(uiWidth / 2f, uiHeight * 0.5f);</span>
+
+    // Set the size and position of the questions
+<span class="nc" id="L165">    trueButtonSprite.setSize(600f, 240f);</span>
+<span class="nc" id="L166">    falseButtonSprite.setSize(600f, 240f);</span>
+<span class="nc" id="L167">    trueButtonSprite.setCenter(uiWidth / 2f - 320f, uiHeight * 0.20f);</span>
+<span class="nc" id="L168">    falseButtonSprite.setCenter(uiWidth / 2f + 320f, uiHeight * 0.20f);</span>
+
+    // Creates a rectangle for the true button
+<span class="nc" id="L171">    trueButtonBounds = new Rectangle(</span>
+<span class="nc" id="L172">        trueButtonSprite.getX(), trueButtonSprite.getY(),</span>
+<span class="nc" id="L173">        trueButtonSprite.getWidth(), trueButtonSprite.getHeight()</span>
+    );
+
+    // Creates a rectangle for the false button
+<span class="nc" id="L177">    falseButtonBounds = new Rectangle(</span>
+<span class="nc" id="L178">        falseButtonSprite.getX(), falseButtonSprite.getY(),</span>
+<span class="nc" id="L179">        falseButtonSprite.getWidth(), falseButtonSprite.getHeight()</span>
+    );
+<span class="nc" id="L181">  }</span>
+
+  /**
+   * EXTENDED FROM ASSESSMENT 1.
+   * Fills the questions hashmap with questions (keys)
+   * and answers (values)
+   */
+  public void initialiseQuestions() {
+    // NEW FOR ASSESSMENT 2 - Questions for hard difficulty
+<span class="nc bnc" id="L190" title="All 2 branches missed.">    if (diffSetup.readDifficulty().hardQuestions) {</span>
+<span class="nc" id="L191">      questions.put(</span>
+          &quot;True or False:\nThe do ... while loop is in the C programming language&quot;,
+          Boolean.TRUE
+      );
+<span class="nc" id="L195">      questions.put(&quot;True or False:\n2n^3 +5n^2 +3 is NOT in O(n3)&quot;, Boolean.FALSE);</span>
+<span class="nc" id="L196">      questions.put(</span>
+           &quot;True or False:\nP &lt;-&gt; Q is true whenever P and Q\nhave different truth values&quot;,
+           Boolean.FALSE
+      );
+<span class="nc" id="L200">      questions.put(</span>
+           &quot;True or False:\nUniversal introduction can be expressed in Carnap with AE&quot;,
+           Boolean.FALSE
+      );
+<span class="nc" id="L204">      questions.put(</span>
+           &quot;True or False:\nThe Java programming language\nis named after a coffee\n from Indonesia&quot;,
+           Boolean.TRUE
+      );
+
+    } else { // EXTENDED FROM QUESTION 1 - Questions for easy and medium difficulty
+<span class="nc" id="L210">      questions.put(</span>
+          &quot;True or False:\nThe self-accepting problem SA \nis semi-decidable&quot;, Boolean.TRUE);
+<span class="nc" id="L212">      questions.put(</span>
+          &quot;True or False:\nIpV4 is 64-bits&quot;, Boolean.FALSE);
+<span class="nc" id="L214">      questions.put(</span>
+          &quot;True or False:\nThe predecessor to the C programming\n language was called B&quot;,
+          Boolean.TRUE
+      );
+<span class="nc" id="L218">      questions.put(</span>
+          &quot;True or False:\nThe programming language Python\nis named after a British comedy series&quot;,
+          Boolean.TRUE
+      );
+<span class="nc" id="L222">      questions.put(&quot;True or False:\nThe HTTPS protocol uses port 80&quot;, Boolean.FALSE);</span>
+    }
+<span class="nc" id="L224">  }</span>
+
+  /**
+   * Using a randomly generated number, this function selects a random question.
+   * from the hash map.
+   *
+   * @return String - A random key from the hash map containing the question
+   */
+  private String selectQuestion() {
+    // TO DO
+<span class="nc" id="L234">    List&lt;String&gt; questionList = new ArrayList&lt;String&gt;(questions.keySet());</span>
+<span class="nc" id="L235">    int questionNumber = randomNum.nextInt(questions.size());</span>
+
+<span class="nc" id="L237">    return questionList.get(questionNumber);</span>
+  }
+
+
+  /**
+   * Ends the event, enabling player movement again and disposing of textures.
+   */
+  @Override
+  public void endEvent() {
+<span class="nc" id="L246">    eventFinished = true;</span>
+<span class="nc" id="L247">    player.enableMovement(true);</span>
+
+<span class="nc" id="L249">    titlePanelTexture.dispose();</span>
+<span class="nc" id="L250">    questionPanelTexture.dispose();</span>
+<span class="nc" id="L251">    trueButtonTexture.dispose();</span>
+<span class="nc" id="L252">    falseButtonTexture.dispose();</span>
+<span class="nc" id="L253">  }</span>
+
+  /**
+   * Called every frame to update the event's logic.
+   * Handles input detection for true/false buttons.
+   * Controls the post-answer delay before ending the event.
+   *
+   * @param delta The time elapsed since the last frame in seconds.
+   *
+   */
+  @Override
+  public void update(float delta) {
+<span class="nc bnc" id="L265" title="All 2 branches missed.">    if (eventFinished) {</span>
+<span class="nc" id="L266">      return;</span>
+    }
+
+    // End event 1 second after answering the question.
+<span class="nc bnc" id="L270" title="All 2 branches missed.">    if (questionAnswered) {</span>
+<span class="nc" id="L271">      answerDisplayTimer += delta;</span>
+<span class="nc bnc" id="L272" title="All 2 branches missed.">      if (answerDisplayTimer &gt; 1f) {</span>
+<span class="nc" id="L273">        endEvent();</span>
+      }
+<span class="nc" id="L275">      return;</span>
+    }
+
+<span class="nc bnc" id="L278" title="All 2 branches missed.">    if (Gdx.input.justTouched()) {</span>
+<span class="nc" id="L279">      Vector3 touchPos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);</span>
+<span class="nc" id="L280">      game.uiCamera.unproject(touchPos);</span>
+
+<span class="nc bnc" id="L282" title="All 2 branches missed.">      if (trueButtonBounds.contains(touchPos.x, touchPos.y)) {</span>
+        // TRUE selected
+<span class="nc" id="L284">        handleAnswer(true);</span>
+<span class="nc bnc" id="L285" title="All 2 branches missed.">      } else if (falseButtonBounds.contains(touchPos.x, touchPos.y)) {</span>
+        // FALSE selected
+<span class="nc" id="L287">        handleAnswer(false);</span>
+      }
+    }
+<span class="nc" id="L290">  }</span>
+
+  /**
+   * Apply's effects based on the player's answer.
+   * If correct, score is increased. If incorrect, player speed is decreased.
+   *
+   * @param answer {@code true} if the true button was pressed, {@code false} otherwise.
+   */
+  private void handleAnswer(boolean answer) {
+<span class="nc" id="L299">    questionAnswered = true;</span>
+<span class="nc" id="L300">    answerDisplayTimer = 0f;</span>
+
+    // Handles the logic of the answer selected by the user
+<span class="nc bnc" id="L303" title="All 2 branches missed.">    if (answer == questions.get(questionText)) {</span>
+<span class="nc" id="L304">      feedbackText = &quot;Correct: Score +500&quot;;</span>
+<span class="nc" id="L305">      scoreManager.increaseScore(500);</span>
+    } else {
+<span class="nc" id="L307">      feedbackText = &quot;Incorrect: Speed Decrease&quot;;</span>
+<span class="nc" id="L308">      achievementManager.removeAchievement(&quot;No incorrect answers&quot;);</span>
+<span class="nc" id="L309">      player.increaseSpeed(-2f);</span>
+    }
+<span class="nc" id="L311">  }</span>
+
+  @Override
+<span class="nc" id="L314">   public void draw() {}</span>
+
+  /**
+   * This Draws all the UI for the elements for the event
+   * This includes the text, the panel as well as the True/False buttons.
+   */
+  @Override
+  public void drawUI() {
+<span class="nc bnc" id="L322" title="All 2 branches missed.">    if (eventFinished) {</span>
+<span class="nc" id="L323">      return;</span>
+    }
+
+    // Sets the font to black
+<span class="nc" id="L327">    game.font.setColor(Color.BLACK);</span>
+
+    // Used to measure text width and height for centering
+<span class="nc" id="L330">    final GlyphLayout layout = new GlyphLayout();</span>
+
+    // Draws the UI into the game
+<span class="nc" id="L333">    titlePanelSprite.draw(game.batch);</span>
+<span class="nc" id="L334">    questionPanelSprite.draw(game.batch);</span>
+<span class="nc" id="L335">    trueButtonSprite.draw(game.batch);</span>
+<span class="nc" id="L336">    falseButtonSprite.draw(game.batch);</span>
+
+<span class="nc" id="L338">    float uiWidth = game.uiViewport.getWorldWidth();</span>
+
+    // Draws the title text
+<span class="nc" id="L341">    String titleText = &quot;EXAM&quot;;</span>
+<span class="nc" id="L342">    layout.setText(game.font, titleText);</span>
+<span class="nc" id="L343">    float titleX = (uiWidth - layout.width) / 2f;</span>
+<span class="nc" id="L344">    float titleY = titlePanelSprite.getY() + titlePanelSprite.getHeight() / 2f + layout.height / 2f;</span>
+<span class="nc" id="L345">    game.font.draw(game.batch, layout, titleX, titleY);</span>
+
+    // Draw question or feedback test, depending on whether the question has been answered.
+<span class="nc bnc" id="L348" title="All 2 branches missed.">    String displayText = questionAnswered ? feedbackText : questionText;</span>
+<span class="nc" id="L349">    layout.setText(game.font, displayText);</span>
+<span class="nc" id="L350">    float questionX = (uiWidth - layout.width) / 2f;</span>
+<span class="nc" id="L351">    float questionY = questionPanelSprite.getY()</span>
+<span class="nc" id="L352">        + questionPanelSprite.getHeight() / 2f</span>
+        + layout.height / 2f;
+<span class="nc" id="L354">    game.font.draw(game.batch, layout, questionX, questionY);</span>
+
+    // Draws the true button label
+<span class="nc" id="L357">    layout.setText(game.font, &quot;TRUE&quot;);</span>
+<span class="nc" id="L358">    float trueTextX = trueButtonSprite.getX() + (trueButtonSprite.getWidth() - layout.width) / 2f;</span>
+<span class="nc" id="L359">    float trueTextY = trueButtonSprite.getY() + (trueButtonSprite.getHeight() + layout.height) / 2f;</span>
+<span class="nc" id="L360">    game.font.draw(game.batch, layout, trueTextX, trueTextY);</span>
+
+    // Draws the False button label
+<span class="nc" id="L363">    layout.setText(game.font, &quot;FALSE&quot;);</span>
+<span class="nc" id="L364">    float falseTextX = falseButtonSprite.getX()</span>
+<span class="nc" id="L365">        + (falseButtonSprite.getWidth()</span>
+        - layout.width) / 2f;
+<span class="nc" id="L367">    float falseTextY = falseButtonSprite.getY()</span>
+<span class="nc" id="L368">        + (falseButtonSprite.getHeight()</span>
+        + layout.height) / 2f;
+<span class="nc" id="L370">    game.font.draw(game.batch, layout, falseTextX, falseTextY);</span>
+<span class="nc" id="L371">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

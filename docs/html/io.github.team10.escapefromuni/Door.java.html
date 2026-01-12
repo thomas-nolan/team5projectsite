@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Door.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.github.team10.escapefromuni</a> &gt; <span class="el_source">Door.java</span></div><h1>Door.java</h1><pre class="source lang-java linenums">package io.github.team10.escapefromuni;
+
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+
+/**
+ * Represents a door used to connect rooms.
+ * Each {@code Door} is has a direction and is managed by the {@link DoorController}.
+ * The door can be active or inactive indicating whether it is visible and can be used.
+ */
+public class Door {
+  public DoorController doorController;
+  public DoorDirection direction;
+
+  public boolean isActive;
+  public Texture doorTexture;
+  public Sprite doorSprite;
+
+  // NEW FOR ASSESSMENT 2 - used for locking doors
+<span class="nc" id="L20">  private boolean isLocked = false;</span>
+
+  /**
+   * Creates a new Door instance.
+   * The door is always active initially and can be locked.
+   *
+   * @param direction Direction of the door in relation to the center of the room.
+   * @param x The x-coordinate of the bottom left corner of the door.
+   * @param y The y-coordinate of the bottom left corner of the door.
+   */
+<span class="nc" id="L30">  public Door(DoorController doorController, DoorDirection direction, float x, float y) {</span>
+    // initialises the door controller and direction
+<span class="nc" id="L32">    this.doorController = doorController;</span>
+<span class="nc" id="L33">    this.direction = direction;</span>
+
+    // loads in the texture and sprite
+<span class="nc" id="L36">    doorTexture = new Texture(&quot;DoorNew.png&quot;);</span>
+<span class="nc" id="L37">    doorSprite = new Sprite(doorTexture);</span>
+
+    // sets the size and position of the sprite
+<span class="nc" id="L40">    doorSprite.setSize(1f, 1f);</span>
+<span class="nc" id="L41">    doorSprite.setPosition(x, y);</span>
+
+<span class="nc" id="L43">    isActive = true;</span>
+<span class="nc" id="L44">  }</span>
+
+  /**
+   * Draws the door sprite into the game.
+   */
+  public void draw() {
+<span class="nc bnc" id="L50" title="All 2 branches missed.">    if (isActive) {</span>
+<span class="nc" id="L51">      doorSprite.draw(doorController.getGame().batch);</span>
+    }
+<span class="nc" id="L53">  }</span>
+
+  /**
+   * This method sets the door to active or not active.
+   *
+   * @param isActive boolean value containing the active preference
+   */
+  public void setActive(boolean isActive) {
+<span class="nc" id="L61">    this.isActive = isActive;</span>
+<span class="nc" id="L62">  }</span>
+
+  /**
+   * This method gets the status of the door.
+   *
+   * @return true if the door is active, false otherwise
+   */
+  public boolean getActive() {
+<span class="nc" id="L70">    return isActive;</span>
+  }
+
+  /**
+   * NEW FOR ASSESSMENT 2.
+   * This method sets a doors lock status
+   *
+   * @param locked a boolean value setting the door to locked or unlocked
+   */
+  public void setLocked(boolean locked) {
+<span class="nc" id="L80">    this.isLocked = locked;</span>
+<span class="nc" id="L81">  }</span>
+
+  /**
+   * NEW FOR ASSESSMENT 2
+   * The method returns if a door is locked or not.
+   *
+   * @return true if the door is locked, false otherwise
+   */
+  public boolean isLocked() {
+<span class="nc" id="L90">    return isLocked;</span>
+  }
+
+  /**
+   * This method disposes of the door texture.
+   */
+  public void dispose() {
+<span class="nc" id="L97">    doorTexture.dispose();</span>
+<span class="nc" id="L98">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

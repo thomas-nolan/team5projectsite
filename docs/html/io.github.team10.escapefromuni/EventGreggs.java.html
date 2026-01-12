@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EventGreggs.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.github.team10.escapefromuni</a> &gt; <span class="el_source">EventGreggs.java</span></div><h1>EventGreggs.java</h1><pre class="source lang-java linenums">package io.github.team10.escapefromuni;
+
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.Vector2;
+
+/**
+ * Positive event where the player encounters a Greggs sausage roll.
+ * When the player runs into the sausage roll, they gain a speed increase.
+ */
+public class EventGreggs implements IEvent {
+
+  private final Player player;
+  private final EscapeGame game;
+  private final EventType type;
+  private final EventSystem eventSystem;
+
+<span class="nc" id="L18">  private boolean eventFinished = false;</span>
+
+  private final Texture greggsTexture;
+  private Sprite greggsSprite;
+
+<span class="nc" id="L23">  private boolean used = false;</span>
+
+  // NEW FOR ASSESSMENT 2 - used to modify the speed boost
+<span class="nc" id="L26">  private DifficultySetup diffSetup = new DifficultySetup();</span>
+
+  /**
+   * EXTENDS ON FROM ASSESSMENT 1.
+   * Creates a new EventGreggs and sets up the new systems created in assessment 2.
+   * Also sets up the other classes needed in the event.
+   */
+<span class="nc" id="L33">  public EventGreggs(Player player, EscapeGame game, EventSystem eventSystem) {</span>
+<span class="nc" id="L34">    this.player = player;</span>
+<span class="nc" id="L35">    this.game = game;</span>
+<span class="nc" id="L36">    this.type = EventType.POSITIVE;</span>
+<span class="nc" id="L37">    greggsTexture = new Texture(&quot;GreggsSausageRoll.png&quot;);</span>
+<span class="nc" id="L38">    this.eventSystem = eventSystem;</span>
+<span class="nc" id="L39">  }</span>
+
+  /**
+   * Returns the type for the event.
+   */
+  @Override
+  public EventType getType() {
+<span class="nc" id="L46">    return type;</span>
+  }
+
+  /**
+   * Returns boolean value to say if the event has finished or not.
+   */
+  @Override
+  public boolean IsFinished() {
+<span class="nc" id="L54">    return eventFinished;</span>
+  }
+
+  /**
+   * Starts the event, and sets up the sprite.
+   */
+  @Override
+  public void startEvent() {
+<span class="nc bnc" id="L62" title="All 2 branches missed.">    if (eventFinished) {</span>
+<span class="nc" id="L63">      return;</span>
+    }
+
+    // Creates the greggs sprite, setting its size and position
+    // Also gets the instance of its sound
+<span class="nc" id="L68">    greggsSprite = new Sprite(greggsTexture);</span>
+<span class="nc" id="L69">    greggsSprite.setSize(3f, 2f);</span>
+<span class="nc" id="L70">    greggsSprite.setPosition(6.5f, 3.5f);</span>
+<span class="nc" id="L71">    AudioManager.getInstance().playEventSound(this.type);</span>
+<span class="nc" id="L72">  }</span>
+
+  /**
+   * Cleans up the event resources once the pickup has been collected.
+   */
+  @Override
+  public void endEvent() {
+<span class="nc bnc" id="L79" title="All 4 branches missed.">    if (!eventFinished &amp;&amp; used) {</span>
+<span class="nc" id="L80">      eventFinished = true;</span>
+<span class="nc" id="L81">      greggsTexture.dispose();</span>
+    }
+<span class="nc" id="L83">  }</span>
+
+  /**
+   * Updates the event logic.
+   */
+  @Override
+  public void update(float delta) {
+<span class="nc bnc" id="L90" title="All 2 branches missed.">    if (!used) {</span>
+      // Gets the distance to the Greggs sprite and picks it up if the distance is less than 1
+<span class="nc" id="L92">      float playerDist = getPlayerGreggsDist();</span>
+<span class="nc bnc" id="L93" title="All 2 branches missed.">      if (playerDist &lt; 1f) {</span>
+<span class="nc" id="L94">        pickupGreggs();</span>
+      }
+    }
+<span class="nc" id="L97">  }</span>
+
+  /**
+   * Calculates the distance between the center of the player and the Greggs sprite.
+   *
+   * @return the distance between the player and the Greggs sprite.
+   */
+  private float getPlayerGreggsDist() {
+<span class="nc" id="L105">    Vector2 playerPos = player.getCenter();</span>
+
+    // Gets the coordinates of the greggs sprite
+<span class="nc" id="L108">    float greggsX = greggsSprite.getX() + greggsSprite.getWidth() / 2f;</span>
+<span class="nc" id="L109">    float greggsY = greggsSprite.getY() + greggsSprite.getHeight() / 2f;</span>
+<span class="nc" id="L110">    Vector2 greggsCenter = new Vector2(greggsX, greggsY);</span>
+<span class="nc" id="L111">    return greggsCenter.dst(playerPos);</span>
+  }
+
+  /**
+   * EXTENDED FROM ASSESSMENT 1.
+   * Handles applying the effects (speed increase) of collecting the Greggs sausage roll.
+   */
+  private void pickupGreggs() {
+<span class="nc" id="L119">    used = true;</span>
+    // NEW FOR ASSESSMENT 2 - Registers the event as positive.
+<span class="nc" id="L121">    eventSystem.registerEvent(EventType.POSITIVE);</span>
+    // NEW FOR ASSESSMENT 2 - Modifies the players speed depending on the difficulty
+<span class="nc" id="L123">    player.increaseSpeed(2f * diffSetup.readDifficulty().speedBoostModifier);</span>
+<span class="nc" id="L124">  }</span>
+
+  /**
+   * Renders the Greggs pickup whilst it's not picked it.
+   */
+  @Override
+  public void draw() {
+<span class="nc bnc" id="L131" title="All 2 branches missed.">    if (!used) {</span>
+<span class="nc" id="L132">      greggsSprite.draw(game.batch);</span>
+    }
+<span class="nc" id="L134">  }</span>
+
+  /**
+   * Draws the UI elements, there are none currently.
+   */
+  @Override
+<span class="nc" id="L140">  public void drawUI() {}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

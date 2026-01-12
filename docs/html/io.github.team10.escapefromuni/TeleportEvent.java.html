@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TeleportEvent.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.github.team10.escapefromuni</a> &gt; <span class="el_source">TeleportEvent.java</span></div><h1>TeleportEvent.java</h1><pre class="source lang-java linenums">package io.github.team10.escapefromuni;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.utils.Align;
+
+/**
+ * New for Assessment 2
+ * This class manages the new teleport event that teleports
+ * the player between rooms in the map.
+ */
+public class TeleportEvent implements IEvent{
+
+    private final Player player;
+    private final RoomFlowManager roomFlow;
+    private final EscapeGame game;
+    private final EventSystem eventSystem;
+
+    private Sprite teleportSprite;
+    private Texture teleportTexture;
+
+<span class="nc" id="L26">    private boolean finished = false;</span>
+
+    /**
+     * Constructor for the teleport
+     * @param player - The player character
+     * @param roomFlow - The RoomFlowManager
+     * @param game - The EscapeGame
+     * @param eventSystem - The EventSystem
+     */
+<span class="nc" id="L35">    public TeleportEvent (Player player, RoomFlowManager roomFlow, EscapeGame game, EventSystem eventSystem){</span>
+<span class="nc" id="L36">        this.player = player;</span>
+<span class="nc" id="L37">        this.roomFlow = roomFlow;</span>
+<span class="nc" id="L38">        this.game = game;</span>
+<span class="nc" id="L39">        this.eventSystem = eventSystem;</span>
+<span class="nc" id="L40">    }</span>
+
+    /**
+     * Getter for the event type
+     * @return - The EventType for the TeleportEvent (HIDDEN)
+     */
+    @Override
+    public EventType getType() {
+<span class="nc" id="L48">        return EventType.HIDDEN;</span>
+    }
+
+    /**
+     * Initialises the event's texture and its position in the map
+     * The event resembles a map (map.png)
+     */
+    @Override
+    public void startEvent() {
+<span class="nc" id="L57">        teleportTexture = new Texture(&quot;map.png&quot;);</span>
+<span class="nc" id="L58">        teleportSprite = new Sprite(teleportTexture);</span>
+<span class="nc" id="L59">        teleportSprite.setSize(3.5f, 3.5f);</span>
+
+<span class="nc" id="L61">        float width = game.viewport.getWorldWidth();</span>
+<span class="nc" id="L62">        float height = game.viewport.getWorldHeight();</span>
+<span class="nc" id="L63">        teleportSprite.setCenter(width - teleportSprite.getWidth() - 0.5f, height / 2f - teleportSprite.getHeight() /2f + 1.5f);</span>
+
+<span class="nc" id="L65">    }</span>
+
+    /**
+     * Disposes of the texture when it is no longer needed
+     */
+    @Override
+    public void endEvent() {
+<span class="nc" id="L72">        teleportTexture.dispose();</span>
+<span class="nc" id="L73">    }</span>
+
+    /**
+     * Checks if the event is collided with by the player
+     * @param delta The time elapsed since the last frame in seconds.
+     */
+    @Override
+    public void update(float delta) {
+<span class="nc bnc" id="L81" title="All 2 branches missed.">       if(finished) return;</span>
+
+<span class="nc bnc" id="L83" title="All 4 branches missed.">       if (player.checkCollision(teleportSprite) &amp;&amp; Gdx.input.isKeyJustPressed(Input.Keys.F)){</span>
+
+<span class="nc" id="L85">            Room destination = roomFlow.getRandomRoom(roomFlow.getRoomByName(&quot;hiddenBookshelfRoom&quot;));</span>
+
+<span class="nc bnc" id="L87" title="All 2 branches missed.">            if(destination != null){</span>
+<span class="nc" id="L88">                eventSystem.registerEvent(EventType.HIDDEN);</span>
+<span class="nc" id="L89">                roomFlow.changeRoomTo(destination);</span>
+<span class="nc" id="L90">                finished = true;</span>
+            }
+       }
+<span class="nc" id="L93">    }</span>
+
+    /**
+     * Draws the event sprite on the map
+     */
+    @Override
+    public void draw() {
+<span class="nc bnc" id="L100" title="All 2 branches missed.">        if(!finished){</span>
+<span class="nc" id="L101">            teleportSprite.draw(game.batch);</span>
+        }
+<span class="nc" id="L103">    }</span>
+
+    /**
+     * Displays the appropriate message for this event
+     * when the player is near it.
+     */
+    @Override
+    public void drawUI() {
+<span class="nc bnc" id="L111" title="All 4 branches missed.">        if(!finished &amp;&amp; player.checkCollision(teleportSprite)) {</span>
+<span class="nc" id="L112">            String message = &quot;It appears you are lost, interact with this map to get back to campus!!!&quot;;</span>
+
+<span class="nc" id="L114">            float uiWidth = game.uiViewport.getWorldWidth();</span>
+<span class="nc" id="L115">            float uiHeight = game.uiViewport.getWorldHeight();</span>
+<span class="nc" id="L116">            float wrapWidth = uiWidth * 0.8f;</span>
+
+
+<span class="nc" id="L119">            game.font.getData().setScale(1.1f);</span>
+<span class="nc" id="L120">            game.font.setColor(Color.WHITE);</span>
+
+<span class="nc" id="L122">            GlyphLayout layout = new GlyphLayout(game.font, message, game.font.getColor(), wrapWidth, Align.center, true);</span>
+
+<span class="nc" id="L124">            float textX = (uiWidth - wrapWidth) / 2f;</span>
+<span class="nc" id="L125">            float textY = 50f + layout.height;</span>
+
+<span class="nc" id="L127">            game.font.draw(game.batch, layout, textX, textY);</span>
+
+<span class="nc" id="L129">            game.font.getData().setScale(1.1f);</span>
+<span class="nc" id="L130">            game.font.setColor(Color.WHITE);</span>
+        }
+<span class="nc" id="L132">    }</span>
+
+    /**
+     *
+     * @return - True if the event is finished, false if not.
+     */
+    @Override
+    public boolean IsFinished() {
+<span class="nc" id="L140">        return finished;</span>
+    }
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

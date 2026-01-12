@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UIController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.github.team10.escapefromuni</a> &gt; <span class="el_source">UIController.java</span></div><h1>UIController.java</h1><pre class="source lang-java linenums">package io.github.team10.escapefromuni;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
+
+/* A class responsible for managing the UI of the game.
+* Loads and opens new menus and allows the player to pause and exit the game
+*/
+public class UIController {
+    private final EscapeGame game;
+    private GameController gameController;
+
+    /* Constructor */
+<span class="nc" id="L14">    public UIController(EscapeGame game, GameController gameController) {</span>
+<span class="nc" id="L15">        this.game = game;</span>
+<span class="nc" id="L16">        this.gameController = gameController;</span>
+<span class="nc" id="L17">    }</span>
+
+    /* Setter method for GameController
+    @param gameController
+     */
+    public void setGameController(GameController gameController) {
+<span class="nc" id="L23">        this.gameController = gameController;</span>
+<span class="nc" id="L24">    }</span>
+
+    /* Displays the main menu and plays the related music */
+    public void showMainMenu() {
+<span class="nc" id="L28">        AudioManager.getInstance().playMenuMusic();</span>
+<span class="nc" id="L29">        game.setScreen(new MainMenu(game, this));</span>
+<span class="nc" id="L30">    }</span>
+
+    /* Loads the main game screen and the appropriate music */
+    public void startGame() {
+<span class="nc" id="L34">        AudioManager.getInstance().playClickSound();</span>
+
+<span class="nc bnc" id="L36" title="All 2 branches missed.">        if(gameController != null){</span>
+<span class="nc" id="L37">            gameController.resetGame();</span>
+        }
+
+<span class="nc" id="L40">        game.setScreen(new GameScreen(game, this, gameController));</span>
+<span class="nc" id="L41">    }</span>
+
+    /* Displays the tutorial menu (can be found in the main menu)
+    Plays an associated click sound when clicking a button.
+     */
+    public void showTutorial() {
+<span class="nc" id="L47">        AudioManager.getInstance().playClickSound();</span>
+<span class="nc" id="L48">        game.setScreen(new TutorialPage(game, this));</span>
+<span class="nc" id="L49">    }</span>
+
+    /* Shows the settings menu (can be found from the main menu)
+    Plays click sound
+     */
+    public void showSettings(Screen previousScreen) {
+<span class="nc" id="L55">        AudioManager.getInstance().playClickSound();</span>
+<span class="nc" id="L56">        game.setScreen(new SettingsPage(game, this, previousScreen));</span>
+<span class="nc" id="L57">    }</span>
+
+    /* Opens the pause menu
+    @param gameScreen -
+    @param pausedTime - The time remaining when the game was paused
+     */
+    public void pauseGame(GameScreen gameScreen, int pausedTime) {
+<span class="nc" id="L64">        AudioManager.getInstance().playMenuMusic();</span>
+<span class="nc" id="L65">        game.setScreen(new PauseMenu(game, this, gameScreen, pausedTime));</span>
+<span class="nc" id="L66">    }</span>
+
+    /* Resumes the game if it has been paused
+    @param gameScreen -
+     */
+    public void resumeGame(GameScreen gameScreen) {
+<span class="nc" id="L72">        AudioManager.getInstance().playClickSound();</span>
+<span class="nc" id="L73">        game.setScreen(gameScreen);</span>
+<span class="nc" id="L74">    }</span>
+
+    /* Displays the appropriate game over screen (win or lose screen)
+        @param win - True if player won, False if not.
+        @param timer - The player's remaining time
+        @param scores - The ScoreManager
+     */
+    public void showGameOver(boolean win, Timer timer, ScoreManager scores) {
+<span class="nc" id="L82">        AudioManager.getInstance().playMenuMusic();</span>
+<span class="nc" id="L83">        game.setScreen(new GameOverScreen(game, this, win, timer, scores, gameController.getAchievementManager(), gameController.getEventSystem()));</span>
+<span class="nc" id="L84">    }</span>
+
+    /* Exits the game fully */
+    public void exitGame() {
+<span class="nc" id="L88">        AudioManager.getInstance().playClickSound();</span>
+<span class="nc" id="L89">        Gdx.app.exit();</span>
+<span class="nc" id="L90">    }</span>
+
+    /*  */
+    public void returnToPreviousScreen(Screen previousScreen){
+<span class="nc bnc" id="L94" title="All 2 branches missed.">        if(previousScreen != null){</span>
+<span class="nc" id="L95">            AudioManager.getInstance().playClickSound();</span>
+<span class="nc" id="L96">            game.setScreen(previousScreen);</span>
+        }
+<span class="nc" id="L98">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

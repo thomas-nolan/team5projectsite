@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>KeyEvent.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.github.team10.escapefromuni</a> &gt; <span class="el_source">KeyEvent.java</span></div><h1>KeyEvent.java</h1><pre class="source lang-java linenums">package io.github.team10.escapefromuni;
+
+import javax.print.attribute.standard.MediaSize.ISO;
+
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+
+/**
+ * New for Assessment 2
+ *
+ * A new event that locks the door leading to the exit and requires a key
+ * to open.
+ *
+ * This key is located in the Dean's room and is guarded by him.
+ */
+public class KeyEvent implements IEvent{
+
+    private final Player player;
+    private final EscapeGame game;
+
+    private Texture keyTexture;
+    private Sprite keySprite;
+    private final EventSystem eventSystem;
+
+<span class="nc" id="L27">    private boolean isFinished = false;</span>
+<span class="nc" id="L28">    private boolean pickedUp = false;</span>
+
+<span class="nc" id="L30">    private BitmapFont font = new BitmapFont();</span>
+
+    /**
+     * Constructor for the KeyEvent
+     * @param player
+     * @param game
+     * @param eventSystem
+     */
+<span class="nc" id="L38">    public KeyEvent(Player player, EscapeGame game, EventSystem eventSystem){</span>
+<span class="nc" id="L39">        this.player = player;</span>
+<span class="nc" id="L40">        this.game = game;</span>
+<span class="nc" id="L41">        this.eventSystem = eventSystem;</span>
+
+<span class="nc" id="L43">        font.setColor(Color.RED);</span>
+<span class="nc" id="L44">    }</span>
+
+    @Override
+    public EventType getType() {
+<span class="nc" id="L48">        return EventType.POSITIVE;</span>
+    }
+
+    @Override
+    public void startEvent() {
+<span class="nc" id="L53">        keyTexture = new Texture(&quot;keycard1.png&quot;);</span>
+<span class="nc" id="L54">        keySprite = new Sprite(keyTexture);</span>
+<span class="nc" id="L55">        keySprite.setSize(1f, 1f);</span>
+<span class="nc" id="L56">        keySprite.setPosition(7f,4f);</span>
+<span class="nc" id="L57">    }</span>
+
+    @Override
+    public void endEvent() {
+<span class="nc" id="L61">        keyTexture.dispose();</span>
+<span class="nc" id="L62">    }</span>
+
+    /**
+     * update runs each frame and checks for player collision with the key
+     * @param delta The time between frames
+     */
+    @Override
+    public void update(float delta) {
+<span class="nc bnc" id="L70" title="All 2 branches missed.">        if(isFinished) return;</span>
+
+<span class="nc bnc" id="L72" title="All 4 branches missed.">        if (!pickedUp &amp;&amp; player.checkCollision(keySprite)){</span>
+<span class="nc" id="L73">            player.giveKey();</span>
+<span class="nc" id="L74">            pickedUp = true;</span>
+<span class="nc" id="L75">            isFinished = true;</span>
+<span class="nc" id="L76">            eventSystem.registerEvent(EventType.POSITIVE);</span>
+        }
+<span class="nc" id="L78">    }</span>
+
+    @Override
+    public void draw() {
+<span class="nc bnc" id="L82" title="All 2 branches missed.">        if(!isFinished){</span>
+<span class="nc" id="L83">            keySprite.draw(game.batch);</span>
+        }
+<span class="nc" id="L85">    }</span>
+
+    @Override
+    public void drawUI() {
+<span class="nc bnc" id="L89" title="All 2 branches missed.">        if(!pickedUp){};</span>
+<span class="nc" id="L90">    }</span>
+
+    @Override
+    public boolean IsFinished() {
+<span class="nc" id="L94">        return isFinished;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

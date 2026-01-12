@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DifficultySetup.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.github.team10.escapefromuni</a> &gt; <span class="el_source">DifficultySetup.java</span></div><h1>DifficultySetup.java</h1><pre class="source lang-java linenums">package io.github.team10.escapefromuni;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.utils.Json;
+
+/**
+ * NEW FOR ASSESSMENT 2.
+ * This class handles the set-up and storing for game's Difficulty.
+ * It reads and writes difficulty modifiers to a local json file
+ * Allows for certain game parameters to be edited
+ */
+public class DifficultySetup {
+
+  private String fileName;
+  private Difficulty difficulty;
+
+  /**
+   * NEW FOR ASSESSMENT 2.
+   * Default constructor used to the Json filename used to save difficulty modifiers.
+   */
+<span class="nc" id="L22">  public DifficultySetup() {</span>
+<span class="nc" id="L23">    this.fileName = &quot;difficulty.json&quot;;</span>
+<span class="nc" id="L24">  }</span>
+
+  /**
+   * NEW FOR ASSESSMENT 2.
+   * Sets the game difficulty and writes it to the file
+   *
+   * @param difficulty the desired difficulty
+   */
+  public void setDifficulty(Difficulty difficulty) {
+<span class="nc" id="L33">    this.difficulty = difficulty;</span>
+<span class="nc" id="L34">    writeDifficulty();</span>
+<span class="nc" id="L35">  }</span>
+
+  /**
+   * NEW FOR ASSESSMENT 2.
+   * Writes the difficulty for the current difficulty to the file
+   * Different difficulties correspond to different modifiers
+   */
+  private void writeDifficulty() {
+    DifficultyModifiers modifiers;
+
+<span class="nc bnc" id="L45" title="All 2 branches missed.">    if (difficulty == Difficulty.HARD) {</span>
+<span class="nc" id="L46">      modifiers = new DifficultyModifiers(0.8f, 1.2f, 0.5f, 0.5f, true);</span>
+      // modifiers = new DifficultyModifiers(0f,2f); // TEST
+<span class="nc bnc" id="L48" title="All 2 branches missed.">    } else if (difficulty == Difficulty.EASY) {</span>
+<span class="nc" id="L49">      modifiers = new DifficultyModifiers(1.2f, 0.75f, 1.25f, 1.25f, false);</span>
+      // modifiers = new DifficultyModifiers(2f,0f); // TEST
+    } else {
+<span class="nc" id="L52">      modifiers = new DifficultyModifiers(1f, 1f, 1f, 1f, false);</span>
+    }
+
+    // creates a new json file and writes the modifiers to it
+<span class="nc" id="L56">    Json json = new Json();</span>
+<span class="nc" id="L57">    FileHandle file = Gdx.files.local(fileName);</span>
+<span class="nc" id="L58">    file.writeString(json.prettyPrint(modifiers), false);</span>
+    // System.out.println(file.file().getAbsolutePath());
+<span class="nc" id="L60">  }</span>
+
+  /**
+   * NEW FOR ASSESSMENT 2.
+   * Reads the difficulty modifiers currently saved in the json file.
+   *
+   * @return the object representing the current difficulty settings
+   */
+  public DifficultyModifiers readDifficulty() {
+<span class="nc" id="L69">    Json json = new Json();</span>
+<span class="nc" id="L70">    FileHandle file = Gdx.files.local(fileName);</span>
+<span class="nc" id="L71">    DifficultyModifiers difficulty = json.fromJson(DifficultyModifiers.class, file);</span>
+<span class="nc" id="L72">    return difficulty;</span>
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

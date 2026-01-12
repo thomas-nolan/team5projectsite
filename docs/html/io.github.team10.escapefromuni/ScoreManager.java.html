@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ScoreManager.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.github.team10.escapefromuni</a> &gt; <span class="el_source">ScoreManager.java</span></div><h1>ScoreManager.java</h1><pre class="source lang-java linenums">package io.github.team10.escapefromuni;
+
+import java.io.*;
+import java.util.*;
+
+/**
+ * Updated from Assessment 1
+ * This class manages the player's score
+ */
+public class ScoreManager {
+
+    private int score;
+    private String playerName;
+<span class="fc" id="L14">    private String[] files = {&quot;scores.csv&quot;, &quot;previous_score.csv&quot;, &quot;player_name.txt&quot;}; // Files to store player data</span>
+<span class="fc" id="L15">    FileManager fileManager = new FileManager();</span>
+
+    /**
+     * Initialises player score at game start
+     * Reads player name from text file
+     */
+<span class="fc" id="L21">    public ScoreManager() {</span>
+<span class="fc" id="L22">        this.score = 0;</span>
+<span class="fc" id="L23">        this.playerName = fileManager.readFileString(files[2]);</span>
+<span class="fc" id="L24">    }</span>
+
+    /**
+     * Increases the player score
+     * @param scoreIncrease - The amount to add to the score
+     */
+    public void increaseScore(int scoreIncrease)
+    {
+<span class="fc" id="L32">        score += scoreIncrease;</span>
+<span class="fc" id="L33">    }</span>
+
+    /**
+     * Getter for score
+     * @return - The player score
+     */
+    public int getScore() {
+<span class="fc" id="L40">        return score;</span>
+    }
+
+    /**
+     * Resets the player score to 0
+     */
+    public void reset() {
+<span class="fc" id="L47">        score = 0;</span>
+<span class="fc" id="L48">    }</span>
+
+    /**
+     * Calculates the final score of the player at the end of the game
+     * Factors in the time left and achievements earned
+     * @param timeLeftSeconds - The player's remaining time
+     * @param achievementManager - The AchievementManager
+     * @return - The player's calculated final score
+     */
+    public int CalculateFinalScore(int timeLeftSeconds, AchievementManager achievementManager) {
+<span class="fc" id="L58">        int timeScore = 50 * timeLeftSeconds;</span>
+<span class="fc" id="L59">        int achievementScore = 200 * achievementManager.getTotalAchievements();</span>
+<span class="fc" id="L60">        int finalScore = timeScore + score + achievementScore;</span>
+<span class="fc" id="L61">        return finalScore;</span>
+    }
+
+    /**
+     * Manages the player leaderboards displayed on the main menu
+     * Saves current score to previous_score.csv each time
+     * Saves score to leaderboards if it is in top 5.
+     * Appends a &quot;1&quot; to the player name if it is a duplicate
+     * @param playerScore - The player score
+     */
+    public void leaderboards(int playerScore) {
+
+<span class="nc" id="L73">        Map&lt;String, Integer&gt; scores = fileManager.readFile(files[0]);</span>
+<span class="nc" id="L74">        this.playerName = fileManager.readFileString(files[2]);</span>
+
+<span class="nc" id="L76">        saveCurrentScore(playerName, playerScore);</span>
+
+<span class="nc bnc" id="L78" title="All 2 branches missed.">        if (!isDuplicate(scores,playerName)) {</span>
+<span class="nc" id="L79">            scores.put(playerName, playerScore);</span>
+        }
+        else {
+<span class="nc" id="L82">            scores.put(playerName + &quot;1&quot; ,playerScore);</span>
+        }
+<span class="nc" id="L84">        scores = fileManager.sortMap(scores);</span>
+
+<span class="nc" id="L86">        fileManager.writeFile(files[0], scores);</span>
+<span class="nc" id="L87">    }</span>
+
+    /**
+     * Write score to leaderboards file
+     * @param name - Player Name
+     * @param score - Player Score
+     */
+    // Used to display the score achieved. Updates each time
+    public void saveCurrentScore(String name, int score) {
+<span class="nc" id="L96">        Map&lt;String, Integer&gt; currentScore = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L97">        currentScore.putIfAbsent(name, score);</span>
+<span class="nc" id="L98">        fileManager.writeFile(files[1], currentScore);</span>
+<span class="nc" id="L99">    }</span>
+
+    /**
+     * Checks if a name is a duplicate
+     * @param map - Hashmap of the leaderboards
+     * @param playerName - Name of the current player
+     * @return - True if name is duplicate, False if not
+     */
+    public boolean isDuplicate(Map&lt;String,Integer&gt; map, String playerName) {
+<span class="fc" id="L108">        Set&lt;String&gt; names = map.keySet();</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">        if (names.contains(playerName)) {</span>
+<span class="fc" id="L110">            return true;</span>
+        }
+<span class="fc" id="L112">        return false;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

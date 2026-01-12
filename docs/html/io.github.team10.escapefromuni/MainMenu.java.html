@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MainMenu.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.github.team10.escapefromuni</a> &gt; <span class="el_source">MainMenu.java</span></div><h1>MainMenu.java</h1><pre class="source lang-java linenums">package io.github.team10.escapefromuni;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * Main menu screen displayed on game launch with menu options:
+ * Start Game,Tutorial,Exit.
+ */
+public class MainMenu implements Screen {
+
+    private final EscapeGame game;
+    private final UIController ui;
+    private Texture backgroundImage;
+    private Texture buttonTexture;
+    private BitmapFont font;
+    private GlyphLayout layout;
+
+<span class="nc" id="L32">    private FileManager fileManager = new FileManager();</span>
+<span class="nc" id="L33">    private String[] files = {&quot;scores.csv&quot;, &quot;previous_score.csv&quot;, &quot;player_name.txt&quot;};</span>
+
+    // buttons
+    private Rectangle startButton;
+    private Rectangle tutorialButton;
+    private Rectangle settingsButton;
+    private Rectangle exitButton;
+    private Rectangle resetButton;
+
+    private Rectangle easyMode;
+    private Rectangle mediumMode;
+    private Rectangle hardMode;
+
+    // hover states for buttons
+    private boolean startHovered;
+    private boolean tutorialHovered;
+    private boolean settingsHovered;
+    private boolean exitHovered;
+    private boolean resetHovered;
+
+    private boolean easyHovered;
+    private boolean mediumHovered;
+    private boolean hardHovered;
+
+    private Stage stage;
+    private Skin skin;
+    private TextField inputField;
+
+<span class="nc" id="L61">    private DifficultySetup difficultySetup = new DifficultySetup();</span>
+
+<span class="nc" id="L63">    public MainMenu(EscapeGame game, UIController ui) {</span>
+<span class="nc" id="L64">        this.game = game;</span>
+<span class="nc" id="L65">        this.ui = ui;</span>
+<span class="nc" id="L66">    }</span>
+
+    /**
+     * Sets up the main menu and initialises all values
+     */
+    @Override
+    public void show() {
+        // background
+<span class="nc" id="L74">        backgroundImage = new Texture(Gdx.files.internal(&quot;mainmenu_background.png&quot;));</span>
+<span class="nc" id="L75">        buttonTexture = new Texture(Gdx.files.internal(&quot;ButtonBG.png&quot;));</span>
+
+<span class="nc" id="L77">        font = game.font;</span>
+<span class="nc" id="L78">        layout = new GlyphLayout();</span>
+
+        // button sizes
+<span class="nc" id="L81">        float buttonWidth = 500f;</span>
+<span class="nc" id="L82">        float buttonHeight = 80f;</span>
+
+        // alignment; To be Fixed
+<span class="nc" id="L85">        float screenWidth = game.uiViewport.getWorldWidth();</span>
+<span class="nc" id="L86">        float screenHeight = game.uiViewport.getWorldHeight();</span>
+<span class="nc" id="L87">        float centerX = screenWidth / 2f;</span>
+
+        // main menu button positions
+<span class="nc" id="L90">        startButton = new Rectangle(centerX - (buttonWidth / 2f), screenHeight / 2f + 150f, buttonWidth, buttonHeight);</span>
+<span class="nc" id="L91">        tutorialButton = new Rectangle(centerX - (buttonWidth / 2f), screenHeight / 2f + 50f, buttonWidth, buttonHeight);</span>
+<span class="nc" id="L92">        settingsButton = new Rectangle(centerX - (buttonWidth / 2f), screenHeight / 2f - 50f, buttonWidth, buttonHeight);</span>
+<span class="nc" id="L93">        exitButton = new Rectangle(centerX - (buttonWidth / 2f), screenHeight / 2f - 150f, buttonWidth, buttonHeight);</span>
+<span class="nc" id="L94">        resetButton = new Rectangle(centerX - (buttonWidth / 2f), screenHeight / 2f - 250f, buttonWidth, buttonHeight);</span>
+
+<span class="nc" id="L96">        easyMode = new Rectangle((centerX + 600f) - buttonWidth / 2f, screenHeight / 2f - 250f, buttonWidth, buttonHeight);</span>
+<span class="nc" id="L97">        mediumMode = new Rectangle((centerX + 600f) - buttonWidth / 2f, screenHeight / 2f - 350f, buttonWidth, buttonHeight);</span>
+<span class="nc" id="L98">        hardMode = new Rectangle((centerX + 600f) - buttonWidth / 2f, screenHeight / 2f - 450f, buttonWidth, buttonHeight);</span>
+
+        //menu music
+<span class="nc" id="L101">        AudioManager.getInstance().playMenuMusic();</span>
+
+        // Display input field
+        //font.draw(game.batch, &quot;Name:&quot;,centerX - buttonWidth, screenHeight + 100f / 2f);
+<span class="nc" id="L105">        stage = new Stage(game.uiViewport);</span>
+<span class="nc" id="L106">        Gdx.input.setInputProcessor(stage);</span>
+
+<span class="nc" id="L108">        skin = new Skin(Gdx.files.internal(&quot;uiskin.json&quot;));</span>
+
+<span class="nc" id="L110">        inputField = new TextField(&quot;null&quot;, skin);</span>
+<span class="nc" id="L111">        inputField.setSize(300, 50);</span>
+<span class="nc" id="L112">        inputField.setPosition(centerX - buttonWidth + 1800f / 2f, screenHeight / 2f);</span>
+<span class="nc" id="L113">        stage.addActor(inputField);</span>
+<span class="nc" id="L114">    }</span>
+
+    /**
+     * Draws the main menu UI
+     */
+    public void display() {
+<span class="nc" id="L120">        game.viewport.apply();</span>
+<span class="nc" id="L121">        game.batch.setProjectionMatrix(game.viewport.getCamera().combined);</span>
+<span class="nc" id="L122">        game.batch.begin();</span>
+<span class="nc" id="L123">        game.batch.draw(backgroundImage, 0, 0, game.viewport.getWorldWidth(), game.viewport.getWorldHeight());</span>
+<span class="nc" id="L124">        game.batch.end();</span>
+
+<span class="nc" id="L126">        game.uiViewport.apply();</span>
+<span class="nc" id="L127">        game.batch.setProjectionMatrix(game.uiCamera.combined);</span>
+<span class="nc" id="L128">        game.batch.begin();</span>
+
+        // draw all main menu buttons
+<span class="nc" id="L131">        drawButton(startButton, &quot;Start Game&quot;, startHovered);</span>
+<span class="nc" id="L132">        drawButton(tutorialButton, &quot;Tutorial&quot;, tutorialHovered);</span>
+<span class="nc" id="L133">        drawButton(settingsButton, &quot;Settings&quot;, settingsHovered);</span>
+<span class="nc" id="L134">        drawButton(exitButton, &quot;Exit&quot;, exitHovered);</span>
+<span class="nc" id="L135">        drawButton(resetButton, &quot;Reset Leaderboards&quot;, resetHovered);</span>
+
+<span class="nc" id="L137">        drawButton(easyMode, &quot;Easy&quot;, easyHovered);</span>
+<span class="nc" id="L138">        drawButton(mediumMode, &quot;Medium&quot;, mediumHovered);</span>
+<span class="nc" id="L139">        drawButton(hardMode, &quot;Hard&quot;, hardHovered);</span>
+
+<span class="nc" id="L141">        displayLeaderboards();</span>
+        //difficultySetup.setDifficulty(Difficulty.EASY); // TEST
+<span class="nc" id="L143">        game.batch.end();</span>
+
+<span class="nc" id="L145">    }</span>
+
+    /**
+     * Used to destroy buttons
+     * @param button
+     * @param text
+     * @param hovered
+     */
+    private void drawButton(Rectangle button, String text, boolean hovered) {
+
+<span class="nc bnc" id="L155" title="All 2 branches missed.">        if (hovered) {</span>
+<span class="nc" id="L156">            game.batch.setColor(1f, 1f, 0.5f, 1f);</span>
+        } else {
+<span class="nc" id="L158">            game.batch.setColor(Color.WHITE);</span>
+        }
+
+        // button bg,size etc
+<span class="nc" id="L162">        game.batch.draw(buttonTexture, button.x, button.y, button.width, button.height);</span>
+<span class="nc" id="L163">        game.batch.setColor(Color.WHITE);</span>
+
+<span class="nc" id="L165">        layout.setText(font, text);</span>
+<span class="nc" id="L166">        float textX = button.x + (button.width - layout.width) / 2f;</span>
+<span class="nc" id="L167">        float textY = button.y + (button.height + layout.height) / 2f;</span>
+
+<span class="nc" id="L169">        font.setColor(Color.WHITE);</span>
+<span class="nc" id="L170">        font.draw(game.batch, layout, textX, textY);</span>
+
+<span class="nc" id="L172">    }</span>
+
+    /**
+     * Displays the leaderboards on the main menu
+     * reads from a csv file for the leaderboards
+     * Also calls a function that displays previous score
+     */
+    private void displayLeaderboards() {
+<span class="nc" id="L180">        Map&lt;String,Integer&gt; scores = fileManager.readFile(files[0]);</span>
+<span class="nc" id="L181">        scores = fileManager.sortMap(scores);</span>
+<span class="nc" id="L182">        float textY = 800;</span>
+<span class="nc bnc" id="L183" title="All 2 branches missed.">        for (String key : scores.keySet()) {</span>
+<span class="nc" id="L184">            String entry = (key + &quot; : &quot; + scores.get(key));</span>
+<span class="nc" id="L185">            font.draw(game.batch, entry,20, textY);</span>
+<span class="nc" id="L186">            textY -= 50;</span>
+<span class="nc" id="L187">        }</span>
+<span class="nc" id="L188">        displayPreviousScore();</span>
+<span class="nc" id="L189">    }</span>
+
+    /**
+     * Reads from a csv file to display the previous score
+     */
+    private void displayPreviousScore() {
+        String key;
+        Integer val;
+<span class="nc" id="L197">        Map&lt;String,Integer&gt; prevScore = fileManager.readFile(files[1]);</span>
+        try{
+<span class="nc" id="L199">            key = (String) prevScore.keySet().toArray()[0];</span>
+<span class="nc" id="L200">            val = prevScore.get(key);</span>
+<span class="nc" id="L201">        } catch (Exception e){</span>
+<span class="nc" id="L202">            key = &quot;&quot;;</span>
+<span class="nc" id="L203">            val = 0;</span>
+<span class="nc" id="L204">        }</span>
+<span class="nc" id="L205">        String score = &quot;Previous score\n&quot; + key + &quot; : &quot; + val;</span>
+<span class="nc" id="L206">        font.draw(game.batch, score, 20, 400);</span>
+<span class="nc" id="L207">    }</span>
+
+    /**
+     * Detects button clicks
+     * @param button - The button being checked
+     * @return - True is clicked, false if not
+     */
+    private boolean isButtonClicked(Rectangle button) {
+        // click detector
+<span class="nc bnc" id="L216" title="All 2 branches missed.">        if (Gdx.input.justTouched()) {</span>
+<span class="nc" id="L217">            Vector2 touchPos = new Vector2(Gdx.input.getX(), Gdx.input.getY());</span>
+<span class="nc" id="L218">            game.uiViewport.unproject(touchPos);</span>
+
+<span class="nc bnc" id="L220" title="All 2 branches missed.">            if (button.contains(touchPos.x, touchPos.y)) {</span>
+                // play click audio
+<span class="nc" id="L222">                AudioManager.getInstance().playClickSound();</span>
+<span class="nc" id="L223">                return true;</span>
+            }
+        }
+<span class="nc" id="L226">        return false;</span>
+    }
+
+    /**
+     * Detects mouse hovers
+     * @param button
+     * @return - True is hovered over, false if not
+     */
+    private boolean isButtonHovered(Rectangle button) {
+        // detect mouse hover in UI coordinates
+<span class="nc" id="L236">        Vector2 mousePos = new Vector2(Gdx.input.getX(), Gdx.input.getY());</span>
+<span class="nc" id="L237">        game.uiViewport.unproject(mousePos);</span>
+<span class="nc" id="L238">        return button.contains(mousePos.x, mousePos.y);</span>
+    }
+
+    /**
+     * Runs when starting the main game
+     */
+    public void onStartGame() {
+        // switch to main gameplay
+<span class="nc" id="L246">        System.out.println(&quot;Starting game...&quot;);</span>
+<span class="nc" id="L247">        ui.startGame();</span>
+<span class="nc" id="L248">        dispose();</span>
+<span class="nc" id="L249">    }</span>
+
+    /**
+     * Opens tutorial menu
+     */
+    public void onTutorial() {
+        // open tutorial page
+<span class="nc" id="L256">        System.out.println(&quot;Opening tutorial...&quot;);</span>
+<span class="nc" id="L257">        ui.showTutorial();</span>
+<span class="nc" id="L258">        dispose();</span>
+<span class="nc" id="L259">    }</span>
+
+    /**
+     * Opens setting menu
+     */
+    public void onSettings() {
+        // open settings page
+<span class="nc" id="L266">        System.out.println(&quot;Opening settings...&quot;);</span>
+<span class="nc" id="L267">        ui.showSettings(this);</span>
+<span class="nc" id="L268">        dispose();</span>
+<span class="nc" id="L269">    }</span>
+
+    /**
+     * Exits the game fully
+     */
+    public void onExit() {
+<span class="nc" id="L275">        System.out.println(&quot;Exiting game...&quot;);</span>
+<span class="nc" id="L276">        ui.exitGame();</span>
+<span class="nc" id="L277">    }</span>
+
+    /**
+     * Reset the leaderboards with sample values
+     */
+    public void onReset() {
+<span class="nc" id="L283">        Map&lt;String, Integer&gt; defaultScores = new HashMap&lt;String, Integer&gt;();</span>
+<span class="nc" id="L284">        defaultScores.put(&quot;Tom&quot;, 15000);</span>
+<span class="nc" id="L285">        defaultScores.put(&quot;Harry&quot;,12000);</span>
+<span class="nc" id="L286">        defaultScores.put(&quot;Mimi&quot;,10000);</span>
+<span class="nc" id="L287">        defaultScores.put(&quot;Will&quot;,5000);</span>
+<span class="nc" id="L288">        defaultScores.put(&quot;Lottie&quot;,1000);</span>
+<span class="nc" id="L289">        Map&lt;String, Integer&gt; defaultPreviousScore = new HashMap&lt;String, Integer&gt;();</span>
+<span class="nc" id="L290">        defaultPreviousScore.put(&quot;Stan&quot;, 500);</span>
+<span class="nc" id="L291">        fileManager.writeFile(files[0],defaultScores);</span>
+<span class="nc" id="L292">        fileManager.writeFile(files[1],defaultPreviousScore);</span>
+<span class="nc" id="L293">    }</span>
+
+    /**
+     * Three functions used to change the difficulty
+     */
+    public void onEasy() {
+<span class="nc" id="L299">        difficultySetup.setDifficulty(Difficulty.EASY);</span>
+<span class="nc" id="L300">    }</span>
+
+    public void onMedium() {
+<span class="nc" id="L303">        difficultySetup.setDifficulty(Difficulty.NORMAL);</span>
+<span class="nc" id="L304">    }</span>
+
+    public void onHard() {
+<span class="nc" id="L307">        difficultySetup.setDifficulty(Difficulty.HARD);</span>
+<span class="nc" id="L308">    }</span>
+
+    /**
+     * Runs every frame, checks for button clicks
+     * @param delta - Time between frames
+     */
+    @Override
+    public void render(float delta) {
+
+<span class="nc" id="L317">        Gdx.gl.glClearColor(0, 0, 0, 1);</span>
+<span class="nc" id="L318">        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);</span>
+
+<span class="nc" id="L320">        startHovered = isButtonHovered(startButton);</span>
+<span class="nc" id="L321">        tutorialHovered = isButtonHovered(tutorialButton);</span>
+<span class="nc" id="L322">        settingsHovered = isButtonHovered(settingsButton);</span>
+<span class="nc" id="L323">        exitHovered = isButtonHovered(exitButton);</span>
+<span class="nc" id="L324">        resetHovered = isButtonHovered(resetButton);</span>
+
+<span class="nc" id="L326">        easyHovered = isButtonHovered(easyMode);</span>
+<span class="nc" id="L327">        mediumHovered = isButtonHovered(mediumMode);</span>
+<span class="nc" id="L328">        hardHovered = isButtonHovered(hardMode);</span>
+
+<span class="nc bnc" id="L330" title="All 2 branches missed.">        if (isButtonClicked(startButton)) {</span>
+<span class="nc" id="L331">            onStartGame();</span>
+<span class="nc bnc" id="L332" title="All 2 branches missed.">        } else if (isButtonClicked(tutorialButton)) {</span>
+<span class="nc" id="L333">            onTutorial();</span>
+<span class="nc bnc" id="L334" title="All 2 branches missed.">        } else if (isButtonClicked(settingsButton)) {</span>
+<span class="nc" id="L335">            onSettings();</span>
+<span class="nc bnc" id="L336" title="All 2 branches missed.">        } else if (isButtonClicked(exitButton)) {</span>
+<span class="nc" id="L337">            onExit();</span>
+<span class="nc bnc" id="L338" title="All 2 branches missed.">        } else if (isButtonClicked(resetButton)) {</span>
+<span class="nc" id="L339">            onReset();</span>
+<span class="nc bnc" id="L340" title="All 2 branches missed.">        } else if (isButtonClicked(easyMode)) {</span>
+<span class="nc" id="L341">            onEasy();</span>
+<span class="nc bnc" id="L342" title="All 2 branches missed.">        } else if (isButtonClicked(mediumMode)) {</span>
+<span class="nc" id="L343">            onMedium();</span>
+<span class="nc bnc" id="L344" title="All 2 branches missed.">        } else if (isButtonClicked(hardMode)) {</span>
+<span class="nc" id="L345">            onHard();</span>
+        }
+
+<span class="nc" id="L348">        String playerName = inputField.getText().trim();</span>
+
+<span class="nc bnc" id="L350" title="All 2 branches missed.">        if (!(playerName.isEmpty())) {</span>
+<span class="nc" id="L351">            fileManager.writeFileString(files[2], playerName);</span>
+        }
+
+        // draw everything
+<span class="nc" id="L355">        display();</span>
+
+<span class="nc" id="L357">        stage.act(delta);</span>
+<span class="nc" id="L358">        stage.draw();</span>
+
+<span class="nc" id="L360">    }</span>
+
+    @Override
+    public void resize(int width, int height) {
+<span class="nc" id="L364">        game.viewport.update(width, height, true);</span>
+<span class="nc" id="L365">        game.uiViewport.update(width, height, true);</span>
+<span class="nc" id="L366">    }</span>
+
+    @Override
+<span class="nc" id="L369">    public void pause() {}</span>
+
+    @Override
+<span class="nc" id="L372">    public void resume() {}</span>
+
+    @Override
+<span class="nc" id="L375">    public void hide() {}</span>
+
+    /**
+     * Dispose of redundant assets
+     */
+    @Override
+    public void dispose() {
+<span class="nc" id="L382">        backgroundImage.dispose();</span>
+<span class="nc" id="L383">        buttonTexture.dispose();</span>
+<span class="nc" id="L384">        stage.dispose();</span>
+<span class="nc" id="L385">        skin.dispose();</span>
+<span class="nc" id="L386">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

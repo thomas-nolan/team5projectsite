@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EventLongboi.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.github.team10.escapefromuni</a> &gt; <span class="el_source">EventLongboi.java</span></div><h1>EventLongboi.java</h1><pre class="source lang-java linenums">package io.github.team10.escapefromuni;
+
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.Vector2;
+
+/**
+ * A hidden event where the player encounters the Ghost of Longboi.
+ * The event begins hidden (only outline is visible) and
+ * is revealed when the player approaches within a certain
+ * distance. Once revealed, Longboi appears and displays a dialogue panel.
+ */
+public class EventLongboi implements IEvent {
+
+  // EXTENDED FROM ASSESSMENT 1 - Core game references including new EventSystem
+  private final Player player;
+  private final EscapeGame game;
+  private final EventType type;
+  private final AchievementManager achievementManager;
+  private final EventSystem eventSystem;
+
+  // Used to track states
+<span class="nc" id="L25">  private boolean eventFinished = false;</span>
+<span class="nc" id="L26">  private boolean hidden = true;</span>
+
+  // Textures used in the event
+  private final Texture longboiHiddenTexture;
+  private final Texture longboiTexture;
+  private Sprite longboiSprite;
+
+  // UI to display dialogue
+  private final Texture speechPanelTexture;
+  private final Sprite speechPanelSprite;
+
+  /**
+   * EXTENDED FROM ASSESSMENT 1.
+   * Creates an instance of hidden Longboi event
+   *
+   * @param player player controlled by the user
+   * @param game the main LibGDX game instance
+   * @param achievementManager manages achievements unlocked by the event
+   * @param eventSystem the central events manager
+   */
+  public EventLongboi(Player player, EscapeGame game,
+<span class="nc" id="L47">        AchievementManager achievementManager, EventSystem eventSystem) {</span>
+<span class="nc" id="L48">    this.player = player;</span>
+<span class="nc" id="L49">    this.game = game;</span>
+<span class="nc" id="L50">    this.type = EventType.HIDDEN;</span>
+<span class="nc" id="L51">    this.achievementManager = achievementManager;</span>
+<span class="nc" id="L52">    this.eventSystem = eventSystem;</span>
+
+    // Loads the texture for hidden and revealed states
+<span class="nc" id="L55">    longboiTexture = new Texture(&quot;Longboi.png&quot;);</span>
+<span class="nc" id="L56">    longboiHiddenTexture = new Texture(&quot;LongboiShadow.png&quot;);</span>
+
+    // Loads and configures the speech UI panel
+<span class="nc" id="L59">    speechPanelTexture = new Texture(&quot;UIWideBottomPanel.png&quot;);</span>
+<span class="nc" id="L60">    speechPanelSprite = new Sprite(speechPanelTexture);</span>
+<span class="nc" id="L61">    speechPanelSprite.setSize(1200f, 240f);</span>
+<span class="nc" id="L62">  }</span>
+
+  /**
+   * Returns the type of the event.
+   */
+  @Override
+  public EventType getType() {
+<span class="nc" id="L69">    return type;</span>
+  }
+
+  /**
+   * Indicates if the event is finished.
+   */
+  @Override
+  public boolean IsFinished() {
+<span class="nc" id="L77">    return eventFinished;</span>
+  }
+
+  /**
+   * Intialises the hidden Longboi event.
+   */
+  @Override
+  public void startEvent() {
+<span class="nc bnc" id="L85" title="All 2 branches missed.">    if (eventFinished) {</span>
+<span class="nc" id="L86">      return;</span>
+    }
+    // NEW FOR ASSESSMENT 2 - awards the &quot;Find Long Boi&quot; achievement when activated
+<span class="nc" id="L89">    achievementManager.addAchievement(&quot;Find Long Boi&quot;);</span>
+
+    // Creates the sprite and sets its size and position
+<span class="nc" id="L92">    longboiSprite = new Sprite(longboiHiddenTexture);</span>
+<span class="nc" id="L93">    longboiSprite.setSize(1f, 2f);</span>
+<span class="nc" id="L94">    longboiSprite.setPosition(8f, 3f);</span>
+<span class="nc" id="L95">    AudioManager.getInstance().playEventSound(this.type);</span>
+<span class="nc" id="L96">  }</span>
+
+  /**
+   * Cleans up the resources once the event has finished.
+   */
+  @Override
+  public void endEvent() {
+<span class="nc bnc" id="L103" title="All 4 branches missed.">    if (!eventFinished &amp;&amp; !hidden) {</span>
+<span class="nc" id="L104">      eventFinished = true;</span>
+<span class="nc" id="L105">      longboiHiddenTexture.dispose();</span>
+<span class="nc" id="L106">      longboiTexture.dispose();</span>
+    }
+<span class="nc" id="L108">  }</span>
+
+  /**
+   * EXTENDS FROM ASSESSMENT 1.
+   * Updates the event logic, displays longboi if the player is close enough.
+   */
+  @Override
+  public void update(float delta) {
+    // Check every frame if player is close enough to reveal.
+<span class="nc bnc" id="L117" title="All 2 branches missed.">    if (hidden) {</span>
+<span class="nc" id="L118">      float playerDist = getPlayerLongboiDist();</span>
+<span class="nc bnc" id="L119" title="All 2 branches missed.">      if (playerDist &lt; 3f) {</span>
+<span class="nc" id="L120">        reveal();</span>
+        // NEW FOR ASSESSMENT 2 - registers the event as hidden, adding it to the events counter
+<span class="nc" id="L122">        eventSystem.registerEvent(EventType.HIDDEN);</span>
+      }
+    }
+<span class="nc" id="L125">  }</span>
+
+  /**
+   * Reveal the hidden event - longboi will appear.
+   */
+  private void reveal() {
+<span class="nc" id="L131">    hidden = false;</span>
+<span class="nc" id="L132">    longboiSprite = new Sprite(longboiTexture);</span>
+<span class="nc" id="L133">    longboiSprite.setSize(1f, 2f);</span>
+<span class="nc" id="L134">    longboiSprite.setPosition(8f, 3f);</span>
+<span class="nc" id="L135">  }</span>
+
+  /**
+   * Calculates the distance between the center of the player and Longboi.
+   *
+   * @return The distance between the player and longboi.
+   */
+  private float getPlayerLongboiDist() {
+<span class="nc" id="L143">    Vector2 playerPos = player.getCenter();</span>
+    // Calculates longboi's vector coordinates
+<span class="nc" id="L145">    float longboiX = longboiSprite.getX() + longboiSprite.getWidth() / 2f;</span>
+<span class="nc" id="L146">    float longboiY = longboiSprite.getY() + longboiSprite.getHeight() / 2f;</span>
+<span class="nc" id="L147">    Vector2 longboiCenter = new Vector2(longboiX, longboiY);</span>
+<span class="nc" id="L148">    return longboiCenter.dst(playerPos);</span>
+  }
+
+  /**
+   * Renders the event sprite whilst active.
+   */
+  @Override
+  public void draw() {
+<span class="nc bnc" id="L156" title="All 2 branches missed.">    if (eventFinished) {</span>
+<span class="nc" id="L157">      return;</span>
+    }
+<span class="nc" id="L159">    longboiSprite.draw(game.batch);</span>
+<span class="nc" id="L160">  }</span>
+
+  /**
+   * Renders the UI, the dialouge once Longboi has been revealed.
+   */
+  @Override
+  public void drawUI() {
+<span class="nc bnc" id="L167" title="All 2 branches missed.">    if (eventFinished) {</span>
+<span class="nc" id="L168">      return;</span>
+    }
+
+<span class="nc bnc" id="L171" title="All 2 branches missed.">    if (!hidden) {</span>
+      // Positions the dialouge on the screen
+<span class="nc" id="L173">      float uiWidth = game.uiViewport.getWorldWidth();</span>
+<span class="nc" id="L174">      float panelY = 150f;</span>
+<span class="nc" id="L175">      float panelX = uiWidth / 2f;</span>
+
+<span class="nc" id="L177">      speechPanelSprite.setCenter(panelX, panelY);</span>
+<span class="nc" id="L178">      speechPanelSprite.draw(game.batch);</span>
+
+      // Dialouge text displayed on the screen to the player
+<span class="nc" id="L181">      String message = &quot;Ghost of Longboi: \&quot;Quack ... Quack\&quot;&quot;;</span>
+
+      // Centers the text within the panel
+<span class="nc" id="L184">      GlyphLayout layout = new GlyphLayout(game.font, message);</span>
+<span class="nc" id="L185">      float textWidth = layout.width;</span>
+<span class="nc" id="L186">      float textHeight = layout.height;</span>
+<span class="nc" id="L187">      float textX = (uiWidth - textWidth) / 2f;</span>
+<span class="nc" id="L188">      float textY = panelY + textHeight / 2f;</span>
+
+      // Sets the colour of the dialouge as well as drawing it in the game
+<span class="nc" id="L191">      game.font.setColor(Color.BLACK);</span>
+<span class="nc" id="L192">      game.font.draw(game.batch, layout, textX, textY);</span>
+    }
+<span class="nc" id="L194">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

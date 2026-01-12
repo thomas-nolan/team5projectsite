@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GameScreen.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.github.team10.escapefromuni</a> &gt; <span class="el_source">GameScreen.java</span></div><h1>GameScreen.java</h1><pre class="source lang-java linenums">package io.github.team10.escapefromuni;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.utils.ScreenUtils;
+
+/**
+ * EXTENDED FROM ASSESSMENT 1.
+ * This class will deal with the 'main' game logic.
+ * For example, creating the player, calling initialiseMap() on the RoomManager.
+ * Will handle rendering of game textures using the SpriteBatch stored in EscapeGame.
+ */
+public class GameScreen extends ScreenAdapter {
+
+  // Initialises the new ASSESSMENT 2 systems
+  private final EscapeGame game;
+  private final GameController controller;
+  private final UIController uiController;
+
+<span class="nc" id="L22">  private boolean isPaused = false;</span>
+
+  /**
+   * EXTENDED FROM ASSESSMENT 1 - to use new systems.
+   * Creates a new game screen
+   *
+   * @param game the main LibGDX game instance
+   * @param uiController the UI manager controlling the games screens
+   * @param controller the main game controller
+   */
+<span class="nc" id="L32">  public GameScreen(EscapeGame game, UIController uiController, GameController controller) {</span>
+<span class="nc" id="L33">    this.game = game;</span>
+<span class="nc" id="L34">    this.uiController = uiController;</span>
+<span class="nc" id="L35">    this.controller = controller;</span>
+<span class="nc" id="L36">  }</span>
+
+  /**
+   * This method checks if the player has run out of time and lost.
+   */
+  public void CheckLose() {
+<span class="nc bnc" id="L42" title="All 2 branches missed.">    if (controller.getTimer().hasReached(300)) { // 300 seconds = 5 minutes</span>
+<span class="nc" id="L43">      uiController.showGameOver(false, controller.getTimer(), controller.getScoreManager());</span>
+    }
+<span class="nc" id="L45">  }</span>
+
+  /**
+   * The main render loop called every frame.
+   */
+  @Override
+  public void render(float delta) {
+    // Check for ESC key to pause
+<span class="nc bnc" id="L53" title="All 2 branches missed.">    if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {</span>
+<span class="nc" id="L54">      pauseGame();</span>
+<span class="nc" id="L55">      return;</span>
+    }
+
+    // Only updates the game logic when not paused
+<span class="nc bnc" id="L59" title="All 2 branches missed.">    if (!isPaused) {</span>
+<span class="nc" id="L60">      controller.update(delta);</span>
+<span class="nc" id="L61">      CheckLose();</span>
+    }
+<span class="nc" id="L63">    draw();</span>
+<span class="nc" id="L64">  }</span>
+
+  /**
+   * Pauses the game and switches the pause menu.
+   */
+  private void pauseGame() {
+<span class="nc" id="L70">    isPaused = true;</span>
+<span class="nc" id="L71">    int pausedTime = controller.getTimer().getTimeSeconds();</span>
+<span class="nc" id="L72">    uiController.pauseGame(this, pausedTime);</span>
+<span class="nc" id="L73">  }</span>
+
+  /**
+   * Resumes the game as well as timer for the game.
+   */
+  public void resumeGame() {
+<span class="nc" id="L79">    isPaused = false;</span>
+<span class="nc" id="L80">  }</span>
+
+  /**
+   * Draw textures to the screen each frame using the {@link EscapeGame}'s SpriteBatch.
+   */
+  private void draw() {
+<span class="nc" id="L86">    ScreenUtils.clear(Color.BLACK);</span>
+<span class="nc" id="L87">    game.viewport.apply();</span>
+<span class="nc" id="L88">    game.batch.setProjectionMatrix(game.viewport.getCamera().combined);</span>
+<span class="nc" id="L89">    game.batch.begin();</span>
+
+    // World Rendering
+<span class="nc" id="L92">    controller.drawWorld();</span>
+<span class="nc" id="L93">    game.batch.end();</span>
+
+    // UI Rendering
+<span class="nc" id="L96">    game.uiViewport.apply();</span>
+<span class="nc" id="L97">    game.batch.setProjectionMatrix(game.uiCamera.combined);</span>
+<span class="nc" id="L98">    game.batch.begin();</span>
+<span class="nc" id="L99">    controller.drawUI(game);</span>
+<span class="nc" id="L100">    game.batch.end();</span>
+<span class="nc" id="L101">  }</span>
+
+  @Override
+  public void dispose() {
+<span class="nc" id="L105">    controller.dispose();</span>
+<span class="nc" id="L106">  }</span>
+
+  @Override
+  public void show() {
+<span class="nc" id="L110">    AudioManager.getInstance().playGameMusic();</span>
+<span class="nc" id="L111">    isPaused = false;</span>
+<span class="nc" id="L112">  }</span>
+
+<span class="nc" id="L114">  @Override public void resize(int width, int height) {}</span>
+
+<span class="nc" id="L116">  @Override public void pause() {}</span>
+
+<span class="nc" id="L118">  @Override public void resume() {}</span>
+
+<span class="nc" id="L120">  @Override public void hide() {}</span>
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

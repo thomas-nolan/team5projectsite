@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BearTrapEvent.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.github.team10.escapefromuni</a> &gt; <span class="el_source">BearTrapEvent.java</span></div><h1>BearTrapEvent.java</h1><pre class="source lang-java linenums">package io.github.team10.escapefromuni;
+
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+
+/**
+ * NEW FOR ASSESSMENT 2.
+ * This class is another negative event
+ * It freezes the player in place for 5 seconds
+ */
+public class BearTrapEvent implements IEvent {
+
+  private static final float FREEZE_TIME = 5f;
+  private final Texture trapTexture;
+  private Sprite trapSprite;
+
+  private final Player player;
+  private final Timer timer;
+  private final EscapeGame game;
+
+<span class="nc" id="L24">  private float remaining = FREEZE_TIME;</span>
+<span class="nc" id="L25">  private boolean finished = false;</span>
+<span class="nc" id="L26">  private boolean triggered = false;</span>
+  private final EventSystem eventSystem;
+
+<span class="nc" id="L29">  private BitmapFont font = new BitmapFont();</span>
+
+  /**
+   * NEW FOR ASSESSMENT 2
+   * This is a constructor for the event.
+   * It initialises the game, player, timer and eventSystem
+   * Also loads the texture and font for the event
+   *
+   * @param game the main LibGDX game instance
+   * @param player the player character controlled by the user
+   * @param timer the games timer
+   * @param eventSystem the central events manager
+   */
+<span class="nc" id="L42">  public BearTrapEvent(EscapeGame game, Player player, Timer timer, EventSystem eventSystem) {</span>
+
+<span class="nc" id="L44">    this.player = player;</span>
+<span class="nc" id="L45">    this.timer = timer;</span>
+<span class="nc" id="L46">    this.game = game;</span>
+<span class="nc" id="L47">    this.eventSystem = eventSystem;</span>
+
+<span class="nc" id="L49">    this.trapTexture = new Texture(&quot;trap.png&quot;);</span>
+<span class="nc" id="L50">    font.setColor(Color.RED);</span>
+
+<span class="nc" id="L52">  }</span>
+
+  /**
+   * NEW FOR ASSESSMENT 2
+   * This returns the event type which is negative.
+   */
+  @Override
+  public EventType getType() {
+<span class="nc" id="L60">    return EventType.NEGATIVE;</span>
+  }
+
+  /**
+   * NEW FOR ASSESSMENT 2.
+   * This method starts the event by creating the sprite
+   * establishing its placement, texture as well as size
+   */
+  @Override
+  public void startEvent() {
+<span class="nc" id="L70">    trapSprite = new Sprite(trapTexture);</span>
+<span class="nc" id="L71">    trapSprite.setSize(2f, 2f);</span>
+<span class="nc" id="L72">    trapSprite.setPosition(7f, 4f);</span>
+<span class="nc" id="L73">  }</span>
+
+  /**
+   * NEW FOR ASSESSMENT 2.
+   * This ends the event by disposing of the font and texture
+   */
+  @Override
+  public void endEvent() {
+<span class="nc" id="L81">    trapTexture.dispose();</span>
+<span class="nc" id="L82">    font.dispose();</span>
+<span class="nc" id="L83">  }</span>
+
+  /**
+   * NEW FOR ASSESSMENT 2.
+   * Handles the logic of triggering the event
+   * Checks if the player has collides and triggers the event if so
+   * Also adds to the events counter
+   */
+  @Override
+  public void update(float delta) {
+<span class="nc bnc" id="L93" title="All 2 branches missed.">    if (finished) {</span>
+<span class="nc" id="L94">      return;</span>
+    }
+<span class="nc bnc" id="L96" title="All 2 branches missed.">    if (!triggered) {</span>
+      // checks if the player touches the sprite
+<span class="nc bnc" id="L98" title="All 4 branches missed.">      if (player.checkCollision(trapSprite) &amp;&amp; !player.isInvincible()) {</span>
+        // sets triggered to true and disables players moment
+        // also adds to the negative event counter
+<span class="nc" id="L101">        triggered = true;</span>
+<span class="nc" id="L102">        eventSystem.registerEvent(EventType.NEGATIVE);</span>
+<span class="nc" id="L103">        player.enableMovement(false);</span>
+      }
+<span class="nc" id="L105">      return;</span>
+    }
+
+<span class="nc" id="L108">    remaining -= delta;</span>
+
+    // enables movement after the set time has elapsed
+<span class="nc bnc" id="L111" title="All 2 branches missed.">    if (remaining &lt;= 0) {</span>
+<span class="nc" id="L112">      player.enableMovement(true);</span>
+<span class="nc" id="L113">      finished = true;</span>
+    }
+<span class="nc" id="L115">  }</span>
+
+  /**
+   * NEW FOR ASSESSMENT 2.
+   * This draws the sprite into the game
+   * Does not draw it once triggered
+   */
+  @Override
+  public void draw() {
+<span class="nc bnc" id="L124" title="All 2 branches missed.">    if (!triggered) {</span>
+<span class="nc" id="L125">      trapSprite.draw(game.batch);</span>
+    }
+<span class="nc" id="L127">  }</span>
+
+  /**
+   * NEW FOR ASSESSMENT 2.
+   * This draws the ui for the event displaying whilst triggered
+   * It displays information about the event
+   * It also displays the time left frozen
+   */
+  @Override
+  public void drawUI() {
+<span class="nc bnc" id="L137" title="All 4 branches missed.">    if (!finished &amp;&amp; triggered) {</span>
+      // Increases the font for visibitly
+<span class="nc" id="L139">      font.getData().setScale(4f);</span>
+
+<span class="nc" id="L141">      String message = &quot;Wet floor! Frozen for &quot; + (int) Math.ceil(remaining) + &quot;s&quot;;</span>
+
+      // Calculates layout dimensions to centre the ui on the screen
+<span class="nc" id="L144">      GlyphLayout layout = new GlyphLayout(font, message);</span>
+
+<span class="nc" id="L146">      float uiWidth = game.uiViewport.getWorldWidth();</span>
+<span class="nc" id="L147">      float uiHeight = game.uiViewport.getWorldHeight();</span>
+
+      // Centers the text horizontally and places it near the top of the screen
+<span class="nc" id="L150">      float textX = (uiWidth - layout.width) / 2f;</span>
+<span class="nc" id="L151">      float textY = uiHeight * 0.9f;</span>
+
+<span class="nc" id="L153">      font.setColor(Color.RED);</span>
+<span class="nc" id="L154">      font.draw(game.batch, layout, textX, textY);</span>
+    }
+<span class="nc" id="L156">  }</span>
+
+  /**
+   * NEW FOR ASSESSMENT 2.
+   * This returns if the game is finished or not
+   */
+  @Override
+  public boolean IsFinished() {
+<span class="nc" id="L164">    return finished;</span>
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

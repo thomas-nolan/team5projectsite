@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RoomFlowManager.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.github.team10.escapefromuni</a> &gt; <span class="el_source">RoomFlowManager.java</span></div><h1>RoomFlowManager.java</h1><pre class="source lang-java linenums">package io.github.team10.escapefromuni;
+
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.ObjectMap;
+
+/**
+ * New for Assessment 2
+ *
+ * A class that manages the rooms in the map
+ */
+public class RoomFlowManager {
+
+    private final EscapeGame game;
+    private final UIController uiController;
+    private final PlayerController playerController;
+    private DoorController doorController;
+    private final EventSystem eventSystem;
+    private final ScoreManager scoreManager;
+    private final AchievementManager achievementManager;
+    private final Timer timer;
+<span class="nc" id="L22">    private final ObjectMap&lt;String, Texture&gt; roomTextures = new ObjectMap&lt;&gt;();</span>
+    private Room currentRoom;
+    private Dean dean;
+<span class="nc" id="L25">    private final Array&lt;Room&gt; allRooms = new Array&lt;&gt;();</span>
+<span class="nc" id="L26">    private boolean bookshelfRoomVisited = false;</span>
+<span class="nc" id="L27">    private boolean keyRoomVisited = false;</span>
+
+    /**
+     * The constructor for the class
+     * @param game
+     * @param uiController
+     * @param playerController
+     * @param doorController
+     * @param eventSystem
+     * @param scoreManager
+     * @param timer
+     * @param achievementManager
+     */
+    public RoomFlowManager(EscapeGame game, UIController uiController, PlayerController playerController,
+<span class="nc" id="L41">        DoorController doorController, EventSystem eventSystem, ScoreManager scoreManager, Timer timer, AchievementManager achievementManager){</span>
+
+<span class="nc" id="L43">        this.game = game;</span>
+<span class="nc" id="L44">        this.uiController = uiController;</span>
+<span class="nc" id="L45">        this.playerController = playerController;</span>
+<span class="nc" id="L46">        this.doorController = doorController;</span>
+<span class="nc" id="L47">        this.eventSystem = eventSystem;</span>
+<span class="nc" id="L48">        this.scoreManager = scoreManager;</span>
+<span class="nc" id="L49">        this.timer = timer;</span>
+<span class="nc" id="L50">        this.achievementManager = achievementManager;</span>
+<span class="nc" id="L51">    }</span>
+
+    /**
+     * Initialises the game map and all of its rooms
+     * It also defines which rooms lead to each other and in what direction
+     * Also responsible for initialising the Dean
+     */
+    public void initialiseMap() {
+
+        // Store room textures in list for easy access and disposal.
+<span class="nc" id="L61">        roomTextures.put(&quot;room1&quot;, new Texture(&quot;Room1.png&quot;));</span>
+<span class="nc" id="L62">        roomTextures.put(&quot;room2&quot;, new Texture(&quot;Room3.png&quot;));</span>
+<span class="nc" id="L63">        roomTextures.put(&quot;room3&quot;, new Texture(&quot;Room4.png&quot;));</span>
+<span class="nc" id="L64">        roomTextures.put(&quot;room4&quot;, new Texture(&quot;Room7.png&quot;));</span>
+<span class="nc" id="L65">        roomTextures.put(&quot;room5&quot;, new Texture(&quot;Room6.png&quot;));</span>
+<span class="nc" id="L66">        roomTextures.put(&quot;room6&quot;, new Texture(&quot;Room8.png&quot;));</span>
+<span class="nc" id="L67">        roomTextures.put(&quot;room7&quot;, new Texture(&quot;Room5.png&quot;));</span>
+<span class="nc" id="L68">        roomTextures.put(&quot;room8&quot;, new Texture(&quot;Room9.png&quot;));</span>
+<span class="nc" id="L69">        roomTextures.put(&quot;room9&quot;, new Texture(&quot;Room10.png&quot;));</span>
+<span class="nc" id="L70">        roomTextures.put(&quot;keyRoom&quot;, new Texture(&quot;PossibleRoom1.png&quot;));</span>
+<span class="nc" id="L71">        roomTextures.put(&quot;hiddenBookshelfRoom&quot;, new Texture(&quot;BookshelfRoom.png&quot;));</span>
+<span class="nc" id="L72">        roomTextures.put(&quot;lostStudentRoom&quot;, new Texture(&quot;Room8.png&quot;));</span>
+
+        // Iniitalises all the rooms
+<span class="nc" id="L75">        Room room1 = new Room(roomTextures.get(&quot;room1&quot;));</span>
+<span class="nc" id="L76">        Room room2 = new Room(roomTextures.get(&quot;room2&quot;));</span>
+<span class="nc" id="L77">        Room room3 = new Room(roomTextures.get(&quot;room3&quot;));</span>
+<span class="nc" id="L78">        Room room4 = new Room(roomTextures.get(&quot;room4&quot;));</span>
+<span class="nc" id="L79">        Room room5 = new Room(roomTextures.get(&quot;room5&quot;));</span>
+<span class="nc" id="L80">        Room room6 = new Room(roomTextures.get(&quot;room6&quot;));</span>
+<span class="nc" id="L81">        Room room7 = new Room(roomTextures.get(&quot;room7&quot;));</span>
+<span class="nc" id="L82">        Room room8 = new Room(roomTextures.get(&quot;room8&quot;));</span>
+<span class="nc" id="L83">        Room room9 = new Room(roomTextures.get(&quot;room9&quot;));</span>
+<span class="nc" id="L84">        room8.setLocked(DoorDirection.EAST, true);</span>
+<span class="nc" id="L85">        Room keyRoom = new Room(roomTextures.get(&quot;keyRoom&quot;));</span>
+<span class="nc" id="L86">        float roomWidth = game.viewport.getWorldWidth();</span>
+<span class="nc" id="L87">        float roomHeight = game.viewport.getWorldHeight();</span>
+<span class="nc" id="L88">        dean = new Dean(0.6f, 1f, 1f, game, roomWidth, roomHeight);</span>
+<span class="nc" id="L89">        Room hiddenBookshelfRoom = new Room(roomTextures.get(&quot;hiddenBookshelfRoom&quot;));</span>
+<span class="nc" id="L90">        Room lostStudentRoom = new Room(roomTextures.get(&quot;lostStudentRoom&quot;));</span>
+
+
+<span class="nc" id="L93">        allRooms.add(room1);</span>
+<span class="nc" id="L94">        allRooms.add(room2);</span>
+<span class="nc" id="L95">        allRooms.add(room3);</span>
+<span class="nc" id="L96">        allRooms.add(room4);</span>
+<span class="nc" id="L97">        allRooms.add(room5);</span>
+<span class="nc" id="L98">        allRooms.add(room6);</span>
+<span class="nc" id="L99">        allRooms.add(room7);</span>
+<span class="nc" id="L100">        allRooms.add(room8);</span>
+<span class="nc" id="L101">        allRooms.add(hiddenBookshelfRoom);</span>
+
+        // Exit room is not actually displayed - game ends as soon as player steps inside.
+<span class="nc" id="L104">        Room exit = new Room(roomTextures.get(&quot;room1&quot;), true);</span>
+
+
+        // Initialise room connections - remember both ways.
+<span class="nc" id="L108">        room1.addAdjacent(room2, DoorDirection.EAST);</span>
+<span class="nc" id="L109">        room2.addAdjacent(room1, DoorDirection.WEST);</span>
+
+<span class="nc" id="L111">        room2.addAdjacent(room3, DoorDirection.NORTH);</span>
+<span class="nc" id="L112">        room3.addAdjacent(room2, DoorDirection.SOUTH);</span>
+<span class="nc" id="L113">        room2.addAdjacent(room4, DoorDirection.EAST);</span>
+<span class="nc" id="L114">        room4.addAdjacent(room2, DoorDirection.WEST);</span>
+<span class="nc" id="L115">        room2.addAdjacent(room6, DoorDirection.SOUTH);</span>
+<span class="nc" id="L116">        room6.addAdjacent(room2, DoorDirection.NORTH);</span>
+
+<span class="nc" id="L118">        room4.addAdjacent(room5, DoorDirection.SOUTH);</span>
+<span class="nc" id="L119">        room5.addAdjacent(room4, DoorDirection.NORTH);</span>
+
+<span class="nc" id="L121">        room5.addAdjacent(room6, DoorDirection.WEST);</span>
+<span class="nc" id="L122">        room6.addAdjacent(room5, DoorDirection.EAST);</span>
+<span class="nc" id="L123">        room5.addAdjacent(room7, DoorDirection.SOUTH);</span>
+<span class="nc" id="L124">        room7.addAdjacent(room5, DoorDirection.NORTH);</span>
+<span class="nc" id="L125">        room5.addAdjacent(room8, DoorDirection.EAST);</span>
+<span class="nc" id="L126">        room8.addAdjacent(room5, DoorDirection.WEST);</span>
+
+<span class="nc" id="L128">        room8.addAdjacent(room9, DoorDirection.EAST);</span>
+<span class="nc" id="L129">        room9.addAdjacent(room8, DoorDirection.WEST);</span>
+
+<span class="nc" id="L131">        room9.addAdjacent(exit, DoorDirection.EAST);</span>
+
+<span class="nc" id="L133">        room3.addAdjacent(keyRoom, DoorDirection.NORTH);</span>
+<span class="nc" id="L134">        keyRoom.addAdjacent(room3, DoorDirection.SOUTH);</span>
+
+<span class="nc" id="L136">        room4.addAdjacent(hiddenBookshelfRoom, DoorDirection.EAST);</span>
+
+
+        // Initialise Events
+<span class="nc" id="L140">        room7.setEvent(new EventLongboi(playerController.getPlayer(), game, achievementManager, eventSystem));</span>
+<span class="nc" id="L141">        room3.setEvent(new EventGreggs(playerController.getPlayer(), game, eventSystem));</span>
+<span class="nc" id="L142">        room5.setEvent(new EventTHE3(playerController.getPlayer(), game, scoreManager, achievementManager, eventSystem));</span>
+<span class="nc" id="L143">        room4.setEvent(new EventFreeze(playerController.getPlayer(), game, timer, eventSystem));</span>
+<span class="nc" id="L144">        room6.setEvent(new BearTrapEvent(game, playerController.getPlayer(), timer, eventSystem));</span>
+<span class="nc" id="L145">        keyRoom.setEvent(new KeyEvent(playerController.getPlayer(), game, eventSystem));</span>
+<span class="nc" id="L146">        hiddenBookshelfRoom.setEvent(new BookshelfEvent(playerController.getPlayer(), this, lostStudentRoom, game, eventSystem));</span>
+<span class="nc" id="L147">        lostStudentRoom.setEvent(new TeleportEvent(playerController.getPlayer(), this, game, eventSystem));</span>
+<span class="nc" id="L148">        room8.setEvent(new InvincibleEvent(playerController.getPlayer(), game, eventSystem));</span>
+
+<span class="nc" id="L150">        currentRoom = room1;</span>
+
+<span class="nc" id="L152">        doorController.updateForRoom(currentRoom);</span>
+<span class="nc" id="L153">        eventSystem.onEnterRoom(currentRoom);</span>
+
+<span class="nc" id="L155">    }</span>
+
+    /**
+     * Gets a random room
+     * @param exclude - Room to exclude
+     * @return - A random valid room
+     */
+    public Room getRandomRoom(Room exclude){
+<span class="nc" id="L163">        Array&lt;Room&gt; validRooms = new Array&lt;&gt;();</span>
+<span class="nc bnc" id="L164" title="All 2 branches missed.">        for (Room r: allRooms){</span>
+<span class="nc bnc" id="L165" title="All 2 branches missed.">            if(r != exclude ){</span>
+<span class="nc" id="L166">                validRooms.add(r);</span>
+            }
+<span class="nc" id="L168">        }</span>
+<span class="nc" id="L169">        return validRooms.random();</span>
+    }
+
+    /**
+     * Returns a Room based on its name
+     * @param room - The name of a room
+     * @return - A room with the given name or null if none found
+     */
+    public Room getRoomByName(String room){
+<span class="nc bnc" id="L178" title="All 2 branches missed.">        for (Room r: allRooms){</span>
+<span class="nc bnc" id="L179" title="All 2 branches missed.">            if (r.getRoomTexture() == roomTextures.get(room)){</span>
+<span class="nc" id="L180">                return r;</span>
+            }
+<span class="nc" id="L182">        }</span>
+<span class="nc" id="L183">        return null;</span>
+    }
+
+    /**
+     * Getter for bookshelfRoomVisited
+     * @return - True if the bookshelf room is visited, false if not
+     */
+    public boolean bookshelfRoomVisited(){
+<span class="nc" id="L191">        return bookshelfRoomVisited;</span>
+    }
+
+    /**
+     * Removes the entrance in the bookshelf room after it is activated
+     * @param bookshelfRoom - The bookshelf room
+     * @param roomFrom - The room the player entered the bookshelf room from
+     * @param direction - The door direction
+     */
+    public void removeEnterence(Room bookshelfRoom, Room roomFrom, DoorDirection direction){
+<span class="nc" id="L201">        roomFrom.removeAdjacent(bookshelfRoom, direction);</span>
+<span class="nc" id="L202">    }</span>
+
+    /**
+     * Registers negative events for rooms that contain them
+     * @param room
+     */
+    public void handleNegativeRoomEntry(Room room){
+<span class="nc bnc" id="L209" title="All 4 branches missed.">        if (room.getEvent() instanceof KeyEvent &amp;&amp; !keyRoomVisited){</span>
+<span class="nc" id="L210">            keyRoomVisited = true;</span>
+<span class="nc" id="L211">            eventSystem.registerEvent(EventType.NEGATIVE);</span>
+        }
+
+<span class="nc bnc" id="L214" title="All 4 branches missed.">        if (room.getEvent() instanceof BookshelfEvent &amp;&amp; !bookshelfRoomVisited){</span>
+<span class="nc" id="L215">            eventSystem.registerEvent(EventType.NEGATIVE);</span>
+        }
+
+<span class="nc" id="L218">    }</span>
+
+    /**
+     * Changes the room the player is in when entering a door
+     * @param room - The room to enter
+     */
+    public void changeRoomTo(Room room){
+<span class="nc" id="L225">        eventSystem.onExitRoom(currentRoom);</span>
+<span class="nc" id="L226">        currentRoom = room;</span>
+<span class="nc" id="L227">        doorController.updateForRoom(room);</span>
+
+<span class="nc" id="L229">        float centerX = game.viewport.getWorldWidth() / 2f;</span>
+<span class="nc" id="L230">        float centerY = game.viewport.getWorldHeight() / 2f;</span>
+<span class="nc" id="L231">        playerController.getPlayer().setCenter(centerX, centerY);</span>
+
+<span class="nc" id="L233">        eventSystem.onEnterRoom(currentRoom);</span>
+<span class="nc" id="L234">        handleNegativeRoomEntry(currentRoom);</span>
+
+<span class="nc" id="L236">    }</span>
+
+    /**
+     * Runs each frame, updates game data
+     * @param delta
+     */
+    public void update(float delta) {
+<span class="nc" id="L243">        playerController.update(delta);</span>
+
+<span class="nc bnc" id="L245" title="All 2 branches missed.">        if (currentRoom.getEvent() instanceof KeyEvent){</span>
+<span class="nc" id="L246">            dean.update(delta);</span>
+
+<span class="nc bnc" id="L248" title="All 2 branches missed.">            if (dean.checkReached(playerController.getPlayer())){</span>
+<span class="nc" id="L249">                GameplayStateManager.triggerLose(game, uiController, timer, scoreManager);</span>
+        }
+        }
+
+<span class="nc" id="L253">    }</span>
+
+    /**
+     * Setter method for doorController
+     * @param doorController - New DoorController
+     */
+    public void setDoorController(DoorController doorController) {
+<span class="nc" id="L260">        this.doorController = doorController;</span>
+<span class="nc" id="L261">    }</span>
+
+    /**
+     * Loads a new room to replace the old one
+     * Updates which doors are visible
+     * Triggers a win if the player enters the exit door
+     * @param direction
+     */
+    public void changeRoom(DoorDirection direction) {
+
+<span class="nc" id="L271">        Room newRoom = currentRoom.getAdjacent(direction);</span>
+<span class="nc bnc" id="L272" title="All 2 branches missed.">        if (newRoom == null){</span>
+<span class="nc" id="L273">            return;</span>
+        }
+
+<span class="nc" id="L276">        eventSystem.onExitRoom(currentRoom);</span>
+
+<span class="nc" id="L278">        currentRoom = newRoom;</span>
+
+<span class="nc" id="L280">        doorController.updateForRoom(newRoom);</span>
+<span class="nc" id="L281">        playerController.positionAfterRoomChange(direction);</span>
+<span class="nc" id="L282">        eventSystem.onEnterRoom(newRoom);</span>
+<span class="nc" id="L283">        handleNegativeRoomEntry(newRoom);</span>
+
+<span class="nc bnc" id="L285" title="All 2 branches missed.">        if (newRoom.isExit())</span>
+        {
+<span class="nc" id="L287">            achievementManager.addAchievement(&quot;Complete game&quot;);</span>
+<span class="nc" id="L288">            GameplayStateManager.triggerWin(game, uiController, timer, scoreManager);</span>
+        }
+
+<span class="nc" id="L291">    }</span>
+
+    /**
+     * Getter for the current room
+     * @return - currrentRoom
+     */
+    public Room getCurrentRoom() {
+<span class="nc" id="L298">        return currentRoom;</span>
+    }
+
+    /**
+     * Draws the current room and the dean if necessary
+     */
+    public void drawCurrentRoom() {
+<span class="nc" id="L305">        Texture t = currentRoom.getRoomTexture();</span>
+<span class="nc" id="L306">        float w = game.viewport.getWorldWidth();</span>
+<span class="nc" id="L307">        float h = game.viewport.getWorldHeight();</span>
+<span class="nc" id="L308">        game.batch.draw(t,0,0, w, h);</span>
+
+<span class="nc bnc" id="L310" title="All 2 branches missed.">        if (currentRoom.getEvent() instanceof KeyEvent) {</span>
+<span class="nc" id="L311">            dean.draw();</span>
+        }
+<span class="nc" id="L313">    }</span>
+
+    /**
+     * Disposes of textures
+     */
+    public void dispose(){
+<span class="nc bnc" id="L319" title="All 2 branches missed.">        for (Texture t: roomTextures.values()){</span>
+<span class="nc" id="L320">            t.dispose();</span>
+<span class="nc" id="L321">        }</span>
+<span class="nc" id="L322">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>
