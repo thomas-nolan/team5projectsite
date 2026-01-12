@@ -13,7 +13,7 @@ title: Assessment 2
 
 ## Testing URLs
 #### Manual Tests
-https://docs.google.com/document/d/1XgDpraYycb4xPILMw0cQ5KsIe0iGRegop_bte30N268/edit?usp=sharing
+[Manual testing material (Manual_testing_material.pdf)](docs/Manual_Testing_Materials.pdf)
 #### Automated Tests
 [index.html (index.html)](docs/tests/test/index.html)
 
