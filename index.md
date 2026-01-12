@@ -14,6 +14,6 @@ We're not all mean there are some positive events as well as some hidden events 
 
 ## Downloads
 
-- **Game JAR:** [Escape_From_Uni-1.0.0.jar](docs/Escape_From_Uni-1.0.0.jar)
+- **Game JAR:** [Escape_From_Uni-2.0.0.jar](https://github.com/thomas-nolan/team5project/releases/latest)
 
 > Tip: On some systems you may need to allow running unsigned apps. Run with: `java -jar Escape_From_Uni-1.0.0.jar`
