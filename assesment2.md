@@ -15,7 +15,7 @@ title: Assessment 2
 #### Manual Tests
 https://docs.google.com/document/d/1XgDpraYycb4xPILMw0cQ5KsIe0iGRegop_bte30N268/edit?usp=sharing
 #### Automated Tests
-https://drive.google.com/file/d/17C6kS8nnkaFrqRyYXJi3ZHtXH2nwuzps/view?usp=sharing
+- [Link to test html (index.html)](docs/tests/test/index.html)
 
 ## GitHub Repository
 https://github.com/thomas-nolan/team5project
