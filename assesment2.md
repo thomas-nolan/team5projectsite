@@ -22,4 +22,4 @@ https://github.com/thomas-nolan/team5project
 
 ## Game Jar
 
-- [Play Game]([docs/Escape_From_Uni-2.0.0.jar](https://github.com/thomas-nolan/team5project/releases/download/v1.2.0/Escape_From_Uni-1.0.0.jar))
+- [Download the game Jar file here]([docs/Escape_From_Uni-2.0.0.jar](https://github.com/thomas-nolan/team5project/releases/download/v1.2.0/Escape_From_Uni-1.0.0.jar))
