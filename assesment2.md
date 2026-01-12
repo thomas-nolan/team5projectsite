@@ -15,11 +15,11 @@ title: Assessment 2
 #### Manual Tests
 https://docs.google.com/document/d/1XgDpraYycb4xPILMw0cQ5KsIe0iGRegop_bte30N268/edit?usp=sharing
 #### Automated Tests
-- [Link to test html (index.html)](docs/tests/test/index.html)
+[index.html (index.html)](docs/tests/test/index.html)
 
 ## GitHub Repository
 https://github.com/thomas-nolan/team5project
 
 ## Game Jar
 
-- [Play Game] (docs/Escape_From_Uni-2.0.0.jar)
+- [Play Game] ([docs/Escape_From_Uni-2.0.0.jar](https://github.com/thomas-nolan/team5project/releases/download/v1.2.0/Escape_From_Uni-1.0.0.jar))
