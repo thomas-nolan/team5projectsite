@@ -12,9 +12,9 @@ title: Assessment 2
 - [Risk Management 2 (Risk2.pdf)](docs/Risk2.pdf)
 
 ## Testing URLs
-### Manual Tests
+#### Manual Tests
 https://docs.google.com/document/d/1XgDpraYycb4xPILMw0cQ5KsIe0iGRegop_bte30N268/edit?usp=sharing
-### Automated Tests
+#### Automated Tests
 https://drive.google.com/file/d/17C6kS8nnkaFrqRyYXJi3ZHtXH2nwuzps/view?usp=sharing
 
 ## GitHub Repository
