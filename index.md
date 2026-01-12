@@ -6,10 +6,11 @@ We're not all mean there are some positive events as well as some hidden events 
 # Team Members
 - Tom Nolan
 - Will Punt
-- Stan
-- Lottie
-- Mimi
-- Ruth
+- Lottie Silverston
+- Mimi Shorthouse
+- Harry Beaumount-Smith
+- Ruth Russel
+- Stanley Thompson
 
 ## Downloads
 
