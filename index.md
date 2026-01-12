@@ -6,7 +6,7 @@ We're not all mean, there are some positive events as well as some hidden events
 # Team Members
 - Tom Nolan
 - Will Punt
-- Lottie Silverston
+- Lottie Silverton
 - Mimi Shorthouse
 - Harry Beaumount-Smith
 - Ruth Russel
